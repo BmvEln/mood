@@ -1,0 +1,217 @@
+.NoteCard {
+  &__datetime {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    margin-bottom: 12px;
+
+    > div:first-child,
+    > div:last-child {
+      cursor: pointer;
+      padding: 4px;
+      width: 17px;
+      height: 17px;
+      transition:
+        transform 0.2s,
+        opacity 0.2s;
+    }
+
+    > div:nth-child(2) {
+      display: flex;
+      align-items: center;
+    }
+
+    > div:first-child {
+      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjIiPjxwYXRoIGQ9Ik0zOTYuMTU0LTI2Ny42OTIgMTgzLjg0Ni00ODBsMjEyLjMwOC0yMTIuMzA4IDI4LjMwOCAyOC43N0wyNjAuOTIzLTUwMGg1MTUuMjMxdjQwSDI2MC45MjNsMTYzLjUzOSAxNjMuNTM4LTI4LjMwOCAyOC43N1oiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMzAiLz48L3N2Zz4=");
+
+      &:hover {
+        transform: translateX(-2px);
+      }
+
+      &:active {
+        transform: translateX(-4px);
+      }
+    }
+
+    > div:last-child {
+      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjIiPjxwYXRoIGQ9Im01NDcuNjkyLTI2Ny42OTItMjguMzA3LTI4Ljc3TDY4Mi45MjMtNDYwSDIwMHYtNDBoNDgyLjkyM0w1MTkuMzg1LTY2My41MzhsMjguMzA3LTI4Ljc3TDc2MC00ODAgNTQ3LjY5Mi0yNjcuNjkyWiIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzMCIvPjwvc3ZnPg==");
+
+      &:hover {
+        transform: translateX(2px);
+      }
+
+      &:active {
+        transform: translateX(4px);
+      }
+    }
+  }
+
+  &__btns {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    > div:last-child {
+      display: flex;
+      column-gap: 6px;
+    }
+
+    margin-bottom: 16px;
+  }
+
+  &__mood {
+    position: relative;
+    user-select: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    cursor: pointer;
+    color: #333132;
+
+    padding: 0 15px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    height: 32px;
+    width: 160px;
+    transition: box-shadow 0.15s;
+
+    > div:first-child {
+      display: flex;
+      align-items: center;
+      column-gap: 4px;
+      justify-content: space-between;
+      width: 100%;
+
+      > img {
+        margin-right: 8px;
+      }
+    }
+
+    &:active {
+      box-shadow: 0 0 0 1px #409eff;
+    }
+
+    &_readable {
+      font-size: 28px;
+      line-height: 32px;
+    }
+  }
+
+  &__popUp {
+    display: flex;
+    flex-direction: column;
+
+    position: absolute;
+    inset: calc(32px + 12px) auto auto 10.4px;
+
+    z-index: 1;
+
+    transition: max-height 0.4s;
+    overflow: hidden;
+
+    > div {
+      display: grid;
+      width: 100%;
+      grid-template-columns: 78px 1fr;
+      align-items: center;
+      column-gap: 4px;
+      box-sizing: border-box;
+      padding: 5px 16px;
+      transition:
+        background-color 0.3s,
+        color 0.3s;
+      background-color: var(--bC-popUp-item);
+
+      &:hover {
+        background-color: #ecf5ff;
+        color: #409eff;
+      }
+    }
+  }
+
+  &__withoutThoughts {
+    > div:first-child {
+      display: flex;
+      width: 100%;
+      height: 143px;
+      background-size: 170px 143px;
+      background-repeat: no-repeat;
+      background-position: center;
+      margin: 50px 0 16px;
+    }
+
+    > div:last-child {
+      text-align: center;
+      font-size: 16px;
+      line-height: 24px;
+      margin-bottom: 24px;
+    }
+  }
+
+  &__edit,
+  &__delete,
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  &__edit,
+  &__delete {
+    background-color: #3557ff;
+  }
+  &__close {
+    box-sizing: border-box;
+    border: 2px solid #3557ff;
+  }
+
+  &__activities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  &__activity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    box-sizing: border-box;
+    font-weight: 500;
+    cursor: pointer;
+
+    height: 32px;
+    border: 1px solid #3557ff;
+    color: #3557ff;
+    border-radius: 15px;
+    transition: border-color 0.3s;
+
+    &:hover:not(.selected):not(.noHover) {
+      border-color: #00157c;
+    }
+
+    &.noHover {
+      cursor: default;
+    }
+
+    &.selected {
+      gap: 4px;
+      background-color: #d2d9ff;
+      color: #00157c;
+    }
+  }
+
+  // Для будущих кнопок
+  &__prev {
+  }
+
+  &__next {
+  }
+}

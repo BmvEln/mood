@@ -1,0 +1,117 @@
+button {
+  // Обнуляющие стили
+  border-style: unset;
+  margin: unset;
+  outline: unset;
+  // ___
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+
+  font-family: "Source Sans", sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 400;
+
+  box-sizing: border-box;
+  border-radius: 16px;
+  background-color: #f0e68ce6;
+  padding: 0 16px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    opacity 0.2s;
+  user-select: none;
+
+  &:hover:not(.noHover) {
+    opacity: 0.9;
+  }
+
+  //&:active {
+  //  background-color: #ead66f;
+  //}
+
+  // Размеры
+  &.md {
+    height: 28px;
+  }
+
+  &.big {
+    height: 32px;
+  }
+
+  // Классы
+  // ...
+
+  // Темы
+  &.black {
+    color: white;
+    background-color: #323232;
+  }
+  &.white {
+    color: #3a3a3a;
+    background-color: white;
+  }
+
+  &.blue {
+    color: #fff;
+    background-color: #00157c;
+  }
+
+  &.edit,
+  &.delete,
+  &.close-1-black,
+  &.close-2-blue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 0;
+  }
+
+  &.edit,
+  &.delete {
+    width: 32px;
+    background-color: #3557ff;
+  }
+
+  // При изменении названия класса, так же нужно поменять в других местах через поиск
+  &.close-1-black {
+    width: 28px;
+    background-color: unset;
+    border: 2px solid #323232;
+
+    img {
+      transition: transform 0.2s;
+    }
+
+    &:hover {
+      img {
+        transform: scale(0.9);
+      }
+    }
+  }
+
+  &.close-2-blue {
+    width: 32px;
+    border: 2px solid #3557ff;
+    background-color: transparent;
+  }
+
+  &.black-border {
+    border: 2px solid #323232;
+    background-color: transparent;
+  }
+
+  &.pink {
+    background-color: #f88484;
+    color: #450808;
+  }
+
+  &.green {
+    background-color: #84f884;
+    color: #084508;
+  }
+}

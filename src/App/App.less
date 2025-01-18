@@ -1,0 +1,539 @@
+:root {
+  //max-width: 1280px;
+  //margin: 0 auto;
+  //background-color: #fbfbfb;
+  //padding: 0 50px;
+  //box-sizing: border-box;
+  //height: 100%;
+  //min-height: 100vh;
+  //padding: 2rem;
+  //text-align: center;
+  --headerHeight: 50px;
+  --footerHeight: 50px;
+}
+
+body {
+  min-width: 1280px;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  font-family: "Source Sans", sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 400;
+  //overflow-x: hidden;
+
+  &.noScroll {
+    overflow-y: hidden;
+  }
+}
+
+line {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+line {
+  &:not(:last-child) {
+    margin-bottom: 12px;
+  }
+  &.tight {
+    margin-bottom: 0 !important;
+  }
+  &.mini {
+    margin-bottom: 4px !important;
+  }
+  hr.tiny,
+  &.tiny:not(:last-child) {
+    margin-bottom: 8px !important;
+  }
+
+  hr.small,
+  &.small:not(:last-child) {
+    margin-bottom: 12px !important;
+  }
+
+  hr.semi-medium,
+  &.semi-medium:not(:last-child) {
+    margin-bottom: 16px !important;
+  }
+
+  &.medium:not(:last-child) {
+    margin-bottom: 20px !important;
+  }
+
+  &.upper-middle:not(:last-child) {
+    margin-bottom: 24px !important;
+  }
+
+  &.big {
+    margin-bottom: 30px !important;
+  }
+
+  &.bigger:not(:last-child) {
+    margin-bottom: 40px !important;
+  }
+
+  &.great:not(:last-child) {
+    margin-bottom: 50px !important;
+  }
+
+  &.hundred {
+    margin-bottom: 70px !important;
+  }
+}
+
+.text {
+  &_regular {
+    font-weight: 400;
+  }
+  &_medium {
+    font-weight: 500;
+  }
+  &_semiBold {
+    font-weight: 600;
+  }
+  &_bold {
+    font-weight: 700;
+  }
+  &_black {
+    font-weight: 900;
+  }
+  &_align_left {
+    text-align: left;
+  }
+  &_align_center {
+    text-align: center;
+  }
+  &_align_right {
+    text-align: right;
+  }
+  &_nowrap {
+    white-space: nowrap;
+  }
+  &_capitalize {
+    text-transform: capitalize;
+  }
+  &_lowercase {
+    text-transform: lowercase;
+    &_firstLetter:first-letter {
+      text-transform: lowercase;
+    }
+  }
+  &_uppercase {
+    text-transform: uppercase;
+    &_firstLetter:first-letter {
+      text-transform: uppercase;
+    }
+  }
+  &_underline {
+    text-decoration: underline;
+  }
+  &_italic {
+    font-style: italic;
+  }
+
+  // Заголовки
+  &_opensans {
+    font-family: "Open Sans", sans-serif;
+  }
+  // Основной
+  &_inter {
+    font-family: "Inter", sans-serif;
+  }
+
+  &_font-10 {
+    font-size: 10px;
+    line-height: 14px;
+  }
+  &_font-12 {
+    font-size: 12px;
+    line-height: 16px;
+  }
+  &_font-14 {
+    font-size: 14px;
+    line-height: 17.6px;
+  }
+  &_font-16 {
+    font-size: 16px;
+    line-height: 20px;
+  }
+  &_font-18 {
+    font-size: 18px;
+    line-height: 22px;
+  }
+  &_font-20 {
+    font-size: 20px;
+    line-height: 26px;
+  }
+  &_font-22 {
+    font-size: 22px;
+    line-height: 30px;
+  }
+  &_font-24 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+  &_font-26 {
+    font-size: 26px;
+    line-height: 34px;
+  }
+  &_font-30 {
+    font-size: 30px;
+    line-height: 40px;
+  }
+  &_font-34 {
+    font-size: 34px;
+    line-height: 46px;
+  }
+}
+
+.cursor {
+  &_default {
+    cursor: default !important;
+  }
+  &_pointer {
+    cursor: pointer;
+  }
+  &_help {
+    cursor: help;
+  }
+  &_wait {
+    cursor: wait;
+  }
+  &_text {
+    cursor: text;
+  }
+}
+
+.color {
+  &_black-1 {
+    color: #000000;
+  }
+  &_black-1-3 {
+    color: #0000004d;
+  }
+  &_black-1-4 {
+    color: #00000066;
+  }
+  &_black-1-6 {
+    color: #00000099;
+  }
+  &_black-1-8 {
+    color: #000000cc;
+  }
+
+  &_black-2 {
+    color: #2c2c2c;
+  }
+
+  &_gray {
+    color: #808080;
+  }
+  &_white {
+    color: #ffffff;
+  }
+  &_green {
+    color: #44c386;
+  }
+  &_orange {
+    color: #ff8e1d;
+  }
+  &_red {
+    color: #f24822;
+  }
+  &_blue {
+    color: #18a0fb;
+  }
+  &_blue-2 {
+    color: #30519dcc;
+  }
+  &_blue-3 {
+    color: #4975db;
+  }
+
+  &_purple {
+    color: #9461ff;
+  }
+  &_negative {
+    color: #f24822;
+  }
+  &_neutral {
+    color: #0050b6;
+  }
+  &_positive {
+    color: #00a648;
+  }
+}
+
+.flex {
+  display: flex;
+
+  &_grow {
+    flex-grow: 1 !important;
+  }
+  &_nogrow {
+    flex-grow: 0 !important;
+  }
+  &_wrap {
+    flex-wrap: wrap;
+  }
+  &_nowrap {
+    flex-wrap: nowrap;
+  }
+  &_stretch {
+    flex: 1;
+  }
+
+  &_column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &_row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &_align {
+    &_center {
+      align-items: center;
+    }
+    &_start {
+      align-items: flex-start;
+    }
+    &_end {
+      align-items: flex-end;
+    }
+    &_baseline {
+      align-items: baseline;
+    }
+  }
+
+  &_justify {
+    &_start {
+      justify-content: flex-start;
+    }
+    &_center {
+      justify-content: center;
+    }
+    &_between {
+      justify-content: space-between;
+    }
+    &_around {
+      justify-content: space-around;
+    }
+    &_end {
+      justify-content: flex-end;
+    }
+  }
+}
+
+.btn {
+  display: flex;
+  border-radius: 16px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  background-color: #8f94f7e6;
+
+  &:hover {
+    background-color: #8f94f7;
+  }
+
+  &.selected {
+    background-color: #646cff;
+  }
+}
+
+.Tracker {
+  &-dashboard {
+    display: flex;
+    flex-direction: column;
+    row-gap: 48px;
+  }
+  &-desc {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  &-group {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      width: calc(324px * 2 + 24px + 200px);
+      height: 1px;
+      background-color: #cccce7;
+      top: -24px;
+    }
+  }
+
+  &-date {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  &-cards {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, 324px);
+    gap: 24px;
+    //margin-bottom: 24px;
+  }
+
+  &-card {
+    padding: 24px;
+    border-radius: 8px;
+    transition: box-shadow 0.2s;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+
+      > div:first-child {
+        display: flex;
+        align-items: center;
+      }
+
+      > div:last-child {
+        display: flex;
+        column-gap: 12px;
+      }
+    }
+
+    &__title {
+    }
+
+    &__time {
+    }
+
+    &__btns {
+      column-gap: 12px;
+      &-edit {
+        background-color: #323232;
+      }
+      &-close {
+        color: #323232;
+        border: 1px solid #323232;
+      }
+    }
+
+    &__spacer {
+      background-color: #3a3a3a;
+      border-radius: 12px;
+      height: 4px;
+      margin-bottom: 12px;
+      width: 24px;
+    }
+
+    &__desc {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 80px;
+    }
+
+    &__activities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    &:hover {
+      box-shadow: inset 0 0 0 1px black;
+    }
+  }
+}
+
+.separator {
+  border-radius: 50%;
+  background-color: #000;
+  margin: 0 4px;
+
+  &.sm {
+    width: 2px;
+    height: 2px;
+  }
+  &.md {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+.Moods {
+  display: flex;
+  column-gap: 24px;
+  margin-bottom: 24px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    color: #000;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    border-radius: 24px;
+    transition: box-shadow 0.3s;
+    cursor: pointer;
+
+    &.selected {
+      box-shadow: inset 0 0 0 1px #333132;
+    }
+
+    &:hover {
+      box-shadow: inset 0 0 0 1px #333132;
+    }
+  }
+}
+
+.textarea {
+  width: 100%;
+  min-height: 93px;
+  max-height: 142px;
+  border: 1px solid #dfdff0;
+  color: #646464;
+  border-radius: 15px;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  resize: none;
+  margin-bottom: 16px;
+
+  &:focus-visible {
+    outline: none;
+    outline-offset: 0;
+  }
+}
+
+.btnScrollTop,
+.btnScrollTop.on {
+  position: absolute;
+  bottom: 0;
+  left: calc(100vw / 2);
+  transform: scale(0.8);
+  opacity: 0;
+  transition:
+    transform 0.5s,
+    bottom 0.5s,
+    opacity 0.3s;
+}
+
+.btnScrollTop.on {
+  // 24 отступ от элементы выше
+  bottom: calc(120px - 28px - 24px);
+  transform: scale(1);
+  opacity: 1;
+}

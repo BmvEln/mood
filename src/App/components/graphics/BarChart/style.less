@@ -1,0 +1,72 @@
+.BarChart {
+  display: flex;
+  position: relative;
+
+  &__bars {
+    position: relative;
+    width: 100%;
+    display: grid;
+    align-items: end;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: calc(100% + 14px);
+      height: 1px;
+      color: #cccccc;
+      background-color: #cccccc;
+    }
+  }
+
+  &__bar {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background-color: #387bff;
+
+    > div:first-child {
+      position: absolute;
+      bottom: -20px;
+      color: #ccc;
+    }
+  }
+
+  &__leftPoints {
+    display: grid;
+    color: #ccc;
+    margin-right: 14px;
+    padding-right: 10px;
+    text-align: right;
+    border-right: 1px solid #ccc;
+
+    > div {
+      position: relative;
+      &:not(:first-child) {
+        > div {
+          position: relative;
+          top: -6px;
+        }
+      }
+
+      &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -15px;
+        width: 9px;
+        height: 1px;
+        background-color: #ccc;
+      }
+    }
+  }
+
+  &__startPoint {
+    position: absolute;
+    left: -31px;
+    bottom: -7px;
+    color: #cccccc;
+  }
+}

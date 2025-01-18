@@ -1,0 +1,33 @@
+.TabsNotes {
+  //position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  row-gap: 60px;
+
+  > div:first-child {
+    display: flex;
+    column-gap: 24px;
+
+    > div {
+      cursor: pointer;
+    }
+  }
+
+  > div:last-child {
+    //display: flex;
+  }
+
+  & .Create {
+    &__date {
+      display: flex;
+      align-items: center;
+      column-gap: 4px;
+
+      font-size: 14px;
+      line-height: 16px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+  }
+}
