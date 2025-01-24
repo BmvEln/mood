@@ -1,6 +1,5 @@
 button {
   // Обнуляющие стили
-  border-style: unset;
   margin: unset;
   outline: unset;
   // ___
@@ -16,8 +15,12 @@ button {
   font-weight: 400;
 
   box-sizing: border-box;
-  border-radius: 16px;
-  background-color: #f0e68ce6;
+  border-radius: 20px;
+
+  color: #333132;
+  text-transform: capitalize;
+  border: 1px solid #d2d9ff;
+  background-color: #fff;
   padding: 0 16px;
   cursor: pointer;
   transition:
@@ -26,7 +29,8 @@ button {
   user-select: none;
 
   &:hover:not(.noHover) {
-    opacity: 0.9;
+    background-color: #ecf5ff;
+    opacity: 0.8;
   }
 
   //&:active {
@@ -49,15 +53,24 @@ button {
   &.black {
     color: white;
     background-color: #323232;
+    &:hover {
+      background-color: #323232;
+    }
   }
   &.white {
     color: #3a3a3a;
     background-color: white;
+    &:hover {
+      background-color: white;
+    }
   }
 
   &.blue {
     color: #fff;
     background-color: #00157c;
+    &:hover {
+      background-color: #00157c;
+    }
   }
 
   &.edit,
@@ -75,6 +88,10 @@ button {
   &.delete {
     width: 32px;
     background-color: #3557ff;
+
+    &:hover {
+      background-color: #3557ff;
+    }
   }
 
   // При изменении названия класса, так же нужно поменять в других местах через поиск
@@ -88,6 +105,7 @@ button {
     }
 
     &:hover {
+      background-color: unset;
       img {
         transform: scale(0.9);
       }
@@ -98,6 +116,10 @@ button {
     width: 32px;
     border: 2px solid #3557ff;
     background-color: transparent;
+
+    &:hover {
+      background-color: transparent;
+    }
   }
 
   &.black-border {
@@ -108,10 +130,16 @@ button {
   &.pink {
     background-color: #f88484;
     color: #450808;
+    &:hover {
+      background-color: #f88484;
+    }
   }
 
   &.green {
     background-color: #84f884;
     color: #084508;
+    &:hover {
+      background-color: #84f884;
+    }
   }
 }

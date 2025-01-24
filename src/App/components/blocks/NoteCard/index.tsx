@@ -5,11 +5,9 @@ import classNames from "classnames";
 import { NoteItem } from "../../../../redux/slices/notesSlice.tsx";
 import Button from "../../controls/Button";
 import { updateNote } from "../../../tabsNotes/utils.tsx";
-import login from "../../../pages/Login";
 
 type NoteCard = {
-  notesReverse: NoteItem[];
-  note: object;
+  notesData: NoteItem[];
   idxCurrNote: number | undefined;
   setIdxCurrNote: (idx: number | undefined) => void;
   activs: number[];
@@ -24,7 +22,6 @@ type NoteCard = {
 };
 
 function NoteCard({
-  note,
   idxCurrNote,
   setIdxCurrNote,
   activs,
@@ -36,7 +33,7 @@ function NoteCard({
   readOnly,
   setEditMode,
   setConfirmWindow,
-  notesReverse,
+  notesData,
 }: NoteCard) {
   const [activePopUp, setActivePopUp] = useState(false),
     refMood = useRef<HTMLDivElement | null>(null),
@@ -48,11 +45,10 @@ function NoteCard({
           setTimeout(() => window.location.reload(), 800);
         }
       },
-      [notesReverse],
+      [notesData],
     ),
-    definedActivities = activs.length ? activs : note?.activities,
     // Берем значение справа если mood не определен
-    moodId = mood || note?.mood,
+    moodId = mood || notesData[idxCurrNote!].mood,
     currMood = MOODS.find((mood) => mood.id === moodId);
 
   useLayoutEffect(() => {
@@ -73,28 +69,8 @@ function NoteCard({
       windowDetails
         ? windowDetails.removeEventListener("click", mouseClickHandler)
         : undefined;
-  }, [note]);
-
-  // console.log("moodId", moodId);
-  // console.log("currMood", currMood);
-
-  // console.log(activs);
-  // console.log(note?.activities);
-  // console.log(activs[0]);
-  // console.log("mood", mood);
-  // console.log(notesReverse[idxCurrNote]);
-  // console.log("note", note);
-  // console.log(mood);
-  // console.log(note?.activities, activs);
-  // console.log(activs.length);
-  // console.log(definedActivities);
-
-  // console.log(
-  //   "definedActivities",
-  //   activs,
-  //   note?.activities,
-  //   new Set([...note?.activities]),
-  // );
+    // Точно ли здесь должен быть idxCurrNote?
+  }, [idxCurrNote!]);
 
   return (
     <>
@@ -106,8 +82,8 @@ function NoteCard({
                 setIdxCurrNote(idxCurrNote - 1);
 
                 // // TODO: Возможно можно как-то упростить. Чуть ниже такая же запись, но с другим знаком
-                setActivs([...notesReverse[idxCurrNote - 1]?.activities]);
-                setMood(notesReverse[idxCurrNote - 1].mood);
+                setActivs([...notesData[idxCurrNote - 1]?.activities]);
+                setMood(notesData[idxCurrNote - 1].mood);
               }
             }}
             style={{
@@ -117,27 +93,27 @@ function NoteCard({
           />
           <div>
             <div>
-              {notesReverse[idxCurrNote]?.timestamp.date}_
-              {notesReverse[idxCurrNote]?.timestamp.time}
+              {notesData[idxCurrNote!].timestamp.date}_
+              {notesData[idxCurrNote!].timestamp.time}
             </div>
             <div className="separator md" />
             <div>
-              {idxCurrNote + 1} / {notesReverse.length}
+              {idxCurrNote + 1} / {notesData.length}
             </div>
           </div>
           <div
             onClick={() => {
-              if (idxCurrNote !== notesReverse.length - 1) {
+              if (idxCurrNote !== notesData.length - 1) {
                 setIdxCurrNote(idxCurrNote + 1);
 
-                setActivs([...notesReverse[idxCurrNote + 1]?.activities]);
-                setMood(notesReverse[idxCurrNote + 1].mood);
+                setActivs([...notesData[idxCurrNote + 1]?.activities]);
+                setMood(notesData[idxCurrNote + 1].mood);
               }
             }}
             style={{
-              opacity: Number(idxCurrNote !== notesReverse.length - 1),
+              opacity: Number(idxCurrNote !== notesData.length - 1),
               cursor:
-                idxCurrNote !== notesReverse.length - 1 ? "pointer" : "default",
+                idxCurrNote !== notesData.length - 1 ? "pointer" : "default",
             }}
           />
         </div>
@@ -202,13 +178,13 @@ function NoteCard({
                   size="big"
                   onClick={() => {
                     setEditMode(true);
-                    setActivs(new Set([...note?.activities]));
+                    setActivs(new Set([...notesData[idxCurrNote!].activities]));
                   }}
                 />
                 <Button
                   theme="delete"
                   size="big"
-                  onClick={() => setConfirmWindow(note?.id)}
+                  onClick={() => setConfirmWindow(notesData[idxCurrNote!].id)}
                 />
               </>
             ) : (
@@ -217,7 +193,7 @@ function NoteCard({
                 size="big"
                 onClick={() =>
                   onClickUpdateNote({
-                    ...note,
+                    ...notesData[idxCurrNote!],
                     mood: mood,
                     activities: Array.from(activs).sort((a, b) => a - b),
                     desc: textarea,
@@ -235,7 +211,7 @@ function NoteCard({
           </div>
         </div>
 
-        {note?.desc || !readOnly ? (
+        {notesData[idxCurrNote!].desc || !readOnly ? (
           <textarea
             className="textarea"
             name="noteCardDesc"
@@ -244,7 +220,7 @@ function NoteCard({
             value={
               typeof textarea === "string" || textarea === ""
                 ? textarea
-                : note?.desc
+                : notesData[idxCurrNote!].desc
             }
           />
         ) : (
@@ -256,7 +232,7 @@ function NoteCard({
 
         <div className="NoteCard__activities">
           {ACTIVITIES.map(({ id, name }) => {
-            if (readOnly && note?.activities?.includes(id)) {
+            if (readOnly && notesData[idxCurrNote!].activities?.includes(id)) {
               return (
                 <div
                   key={id}

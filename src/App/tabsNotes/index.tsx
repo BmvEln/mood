@@ -29,10 +29,14 @@ function TabsNotes() {
   return (
     <div id="tabsNotes" className="TabsNotes">
       {/* Вкладки */}
-      <div>
+      <div className="TabsNotes__tab">
         {TABS.map(({ name }, i) => {
           return (
-            <div key={i} onClick={() => dispatch(setIdxTab(i))}>
+            <div
+              className={i === idxTab ? "active" : ""}
+              key={i}
+              onClick={() => dispatch(setIdxTab(i))}
+            >
               {name}
             </div>
           );

@@ -41,12 +41,12 @@ function Select({ variants = [{ id: 1, name: "" }], onChange }: SelectProps) {
         style={{
           opacity: activePopUp ? 1 : 0,
           maxHeight: activePopUp ? 350 : 0,
+          pointerEvents: activePopUp ? "auto" : "none",
         }}
       >
         {variants.map(({ id, name }, i) => {
           const item = (
             <div
-              style={{ pointerEvents: activePopUp ? "auto" : "none" }}
               onClick={() => {
                 setIdxItem(i);
                 setActivePopUp(false);

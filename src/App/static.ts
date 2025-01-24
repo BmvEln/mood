@@ -26,6 +26,8 @@ export const IMG = {
 export const LINK_LOGIN = "login";
 export const LINK_NOTES = "notes";
 export const LINK_HOME = ".";
+export const NOTES_ORDER_DEC = "decrease";
+export const NOTES_ORDER_INC = "increase";
 
 export const MOODS: {
     id: number;

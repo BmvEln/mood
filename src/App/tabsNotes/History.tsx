@@ -21,10 +21,11 @@ const MAX_NUM_DISPLAY_ACTIVS = 3;
 
 function History() {
   const dispatch = useAppDispatch(),
+    // За данными обращаться к notesData
     { notes } = useSelector((state: RootState) => state.notes),
-    // Переворачиваем, чтобы новые записи были сверху
-    notesReverse = notes.toReversed(),
-    [note, setNote] = useState({}),
+    // true (по возрастанию) | false (по убыванию)
+    [order, setOrder] = useState(false),
+    notesData = order ? notes : notes.toReversed(),
     [confirmWindow, setConfirmWindow] = useState<number | undefined>(undefined),
     [idxCurrNote, setIdxCurrNote] = useState<number | undefined>(undefined),
     [editMode, setEditMode] = useState<boolean>(false),
@@ -32,54 +33,78 @@ function History() {
     [activs, setActivs] = useState(new Set()),
     [mood, setMood] = useState<number | undefined>(undefined),
     [error, setError] = useState(""),
-    [loading, setLoading] = useState(false),
-    sortNotesByDate = notesReverse.reduce((all: object, note: NoteItem) => {
-      // Проверяем есть ли в объекте массив под нужным ключом
-      // если нет, кладём пустой массив
-      all[note.timestamp.date] = all[note.timestamp.date] || [];
-      // кладём элемент в массив
-      all[note.timestamp.date].push(note);
+    [loading, setLoading] = useState(false);
 
-      return all;
-    }, {}),
-    arrVSortByDate = Object.values(sortNotesByDate),
-    arrKSortByDate = Object.keys(sortNotesByDate),
+  const [moodFilter, setMoodFilter] = useState(new Set()),
+    [activeFilter, setActiveFilter] = useState(new Set()),
     [searchLocal, setSearchLocal] = useState<string>(""),
-    [searchServer, setSearchServer] = useDebounce("", 600),
-    [moodFilter, setMoodFilter] = useState<number | undefined>(undefined),
-    [activeFilter, setActiveFilter] = useState<number | undefined>(undefined);
+    [searchServer, setSearchServer] = useDebounce("", 600);
+
+  const filterData = notesData.filter((note) => {
+    const _moodFilter = Array.from(moodFilter).includes(note.mood);
+    // Если [].every = true функция callback не выполняется, т.к. все значения будут тру
+    const _activeFilter = Array.from(activeFilter).every((v) =>
+      note.activities.includes(v),
+    );
+
+    switch (true) {
+      case !!(activeFilter.size && moodFilter.size):
+        if (_activeFilter && _moodFilter) return true;
+        break;
+      case !!moodFilter.size:
+        if (_moodFilter) return true;
+        break;
+      // По умолчанию
+      case _activeFilter:
+        return true;
+    }
+  });
+
+  const sortNotesByDate = //
+      filterData.reduce((all: object, note: NoteItem) => {
+        // Проверяем есть ли в объекте массив под нужным ключом
+        // если нет, кладём пустой массив
+        all[note.timestamp.date] = all[note.timestamp.date] || [];
+        // кладём элемент в массив
+        all[note.timestamp.date].push(note);
+
+        return all;
+      }, {}),
+    arrVSortByDate = Object.values(sortNotesByDate),
+    arrKSortByDate = Object.keys(sortNotesByDate);
 
   // TODO: Сделать загрузку не только при получении данных (Но ещё и при добавлении, удалении, обновлении ?? )
   useEffect(() => {
-    const moodParameter = moodFilter ? `mood=${moodFilter}` : "";
-
     setLoading(true);
     axios
-      .get(`${DATA_URL}?${moodParameter}&desc=*${searchServer}`)
+      .get(`${DATA_URL}`)
       .then((response) => {
         dispatch(setNotes(response.data));
         setLoading(false);
       })
       .catch((error) => setError(error.message));
-  }, [searchServer, moodFilter]);
+  }, []);
 
-  useEffect(() => {
-    // notes[undefined] - допускается в js, ошибки не последует - будет undefined
-    setNote(notesReverse[idxCurrNote]);
-    // Если что-то выбрал, то значение используется либо по умолчанию, либо от кнопки изменить
-    setEditMode(typeof idxCurrNote === "number" && editMode);
-  }, [idxCurrNote]);
+  // useEffect(() => {
+  //   // Если что-то выбрал, то значение используется либо по умолчанию, либо от кнопки изменить
+  //   setEditMode(typeof idxCurrNote === "number" && editMode);
+  // }, [idxCurrNote]);
 
   // if (loading) {
   //   return "Пожалуйста подождите, идет загрузка...";
   // }
 
+  console.log(1);
+
   return (
     <>
       <Search
+        order={order}
+        setOrder={setOrder}
         searchLocal={searchLocal}
         setSearchLocal={setSearchLocal}
         setSearchServer={setSearchServer}
+        moodFilter={moodFilter}
         setMoodFilter={setMoodFilter}
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
@@ -91,7 +116,7 @@ function History() {
           добавлять, <br /> удалять или редактировать любые ранее добавленные
           настроения.
         </div>
-        {!notes.length
+        {!notesData.length
           ? "На текущий момент записей нет"
           : arrVSortByDate.map((arrayNotes, i) => (
               <div key={arrKSortByDate[i]} className="Tracker-group">
@@ -125,7 +150,7 @@ function History() {
 
                             if (!btnClose) {
                               setIdxCurrNote(
-                                notesReverse.findIndex(
+                                notesData.findIndex(
                                   (item: NoteItem) => item.id === id,
                                 ),
                               );
@@ -149,7 +174,7 @@ function History() {
                                   setTextarea(undefined);
 
                                   setIdxCurrNote(
-                                    notesReverse.findIndex(
+                                    notesData.findIndex(
                                       (item: NoteItem) => item.id === id,
                                     ),
                                   );
@@ -207,21 +232,22 @@ function History() {
         }}
         hideClose
       >
-        <NoteCard
-          notesReverse={notesReverse}
-          note={note}
-          idxCurrNote={idxCurrNote}
-          setIdxCurrNote={setIdxCurrNote}
-          activs={activs}
-          setActivs={setActivs}
-          mood={mood}
-          setMood={setMood}
-          textarea={textarea}
-          setTextarea={setTextarea}
-          setEditMode={setEditMode}
-          readOnly={!editMode}
-          setConfirmWindow={setConfirmWindow}
-        />
+        {typeof idxCurrNote !== "number" ? null : (
+          <NoteCard
+            notesData={notesData}
+            idxCurrNote={idxCurrNote}
+            setIdxCurrNote={setIdxCurrNote}
+            activs={activs}
+            setActivs={setActivs}
+            mood={mood}
+            setMood={setMood}
+            textarea={textarea}
+            setTextarea={setTextarea}
+            setEditMode={setEditMode}
+            readOnly={!editMode}
+            setConfirmWindow={setConfirmWindow}
+          />
+        )}
       </Window>
 
       <Window
