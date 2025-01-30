@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { NoteItem } from "../../../../redux/slices/notesSlice.tsx";
 import Button from "../../controls/Button";
 import { updateNote } from "../../../tabsNotes/utils.tsx";
+import Window from "../../layout/Window";
 
 type NoteCard = {
   notesData: NoteItem[];
@@ -16,7 +17,7 @@ type NoteCard = {
   setMood: (mood: number) => void;
   textarea: string | undefined;
   setTextarea: (textarea: string) => void;
-  readOnly: boolean;
+  editMode: boolean;
   setEditMode: (v: boolean) => void;
   setConfirmWindow: (id: number) => void;
 };
@@ -30,20 +31,19 @@ function NoteCard({
   setMood,
   textarea,
   setTextarea,
-  readOnly,
+  editMode,
   setEditMode,
   setConfirmWindow,
   notesData,
 }: NoteCard) {
   const [activePopUp, setActivePopUp] = useState(false),
+    [activeWindow, setActiveWindow] = useState(false),
     refMood = useRef<HTMLDivElement | null>(null),
     windowDetails = document.getElementById("window-details"),
     onClickUpdateNote = useCallback(
       (note: object) => {
-        if (window.confirm("Вы точно хотите ИЗМЕНИТЬ заметку?")) {
-          updateNote(note);
-          setTimeout(() => window.location.reload(), 800);
-        }
+        updateNote(note);
+        setTimeout(() => window.location.reload(), 800);
       },
       [notesData],
     ),
@@ -71,6 +71,8 @@ function NoteCard({
         : undefined;
     // Точно ли здесь должен быть idxCurrNote?
   }, [idxCurrNote!]);
+
+  console.log(editMode);
 
   return (
     <>
@@ -118,7 +120,7 @@ function NoteCard({
           />
         </div>
         <div className="NoteCard__btns">
-          {readOnly ? (
+          {!editMode ? (
             <div className="NoteCard__mood_readable">{currMood?.name}</div>
           ) : (
             <div
@@ -171,7 +173,7 @@ function NoteCard({
           )}
 
           <div>
-            {readOnly ? (
+            {!editMode ? (
               <>
                 <Button
                   theme="edit"
@@ -191,14 +193,7 @@ function NoteCard({
               <Button
                 theme="blue"
                 size="big"
-                onClick={() =>
-                  onClickUpdateNote({
-                    ...notesData[idxCurrNote!],
-                    mood: mood,
-                    activities: Array.from(activs).sort((a, b) => a - b),
-                    desc: textarea,
-                  })
-                }
+                onClick={() => setActiveWindow(true)}
               >
                 Обновить
               </Button>
@@ -211,12 +206,12 @@ function NoteCard({
           </div>
         </div>
 
-        {notesData[idxCurrNote!].desc || !readOnly ? (
+        {notesData[idxCurrNote!].desc || editMode ? (
           <textarea
             className="textarea"
             name="noteCardDesc"
             onChange={(e) => setTextarea(e.target.value)}
-            readOnly={readOnly}
+            readOnly={!editMode}
             value={
               typeof textarea === "string" || textarea === ""
                 ? textarea
@@ -232,12 +227,12 @@ function NoteCard({
 
         <div className="NoteCard__activities">
           {ACTIVITIES.map(({ id, name }) => {
-            if (readOnly && notesData[idxCurrNote!].activities?.includes(id)) {
+            if (!editMode && notesData[idxCurrNote!].activities?.includes(id)) {
               return (
                 <div
                   key={id}
                   className={classNames("NoteCard__activity", {
-                    noHover: readOnly,
+                    noHover: !editMode,
                   })}
                 >
                   {name}
@@ -245,7 +240,7 @@ function NoteCard({
               );
             }
 
-            if (!readOnly) {
+            if (editMode) {
               return (
                 <div
                   key={id}
@@ -269,6 +264,24 @@ function NoteCard({
           })}
         </div>
       </div>
+
+      {/* Нужно подумать как сделать, чтобы было по центру */}
+      <Window
+        open={activeWindow}
+        onClose={() => setActiveWindow(false)}
+        confirm="Вы точно хотите ИЗМЕНИТЬ заметку?"
+        onClickYes={() => {
+          onClickUpdateNote({
+            ...notesData[idxCurrNote!],
+            mood: mood,
+            activities: Array.from(activs).sort((a, b) => a - b),
+            desc: textarea,
+          });
+
+          setActiveWindow(false);
+          // setIdxCurrNote(undefined);
+        }}
+      />
     </>
   );
 }
