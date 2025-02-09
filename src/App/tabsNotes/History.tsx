@@ -1,10 +1,13 @@
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ACTIVITIES, MOODS } from "../static.ts";
 import { NoteItem, setNotes } from "../../redux/slices/notesSlice.tsx";
 import Button from "../components/controls/Button";
-import { RootState, useAppDispatch } from "../../redux/store.tsx";
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from "../../redux/store.tsx";
 import Window from "../components/layout/Window";
 import NoteCard from "../components/blocks/NoteCard";
 import { deleteNote } from "./utils.tsx";
@@ -22,7 +25,7 @@ const MAX_NUM_DISPLAY_ACTIVS = 3;
 function History() {
   const dispatch = useAppDispatch(),
     // За данными обращаться к notesData
-    { notes } = useSelector((state: RootState) => state.notes),
+    { notes } = useAppSelector((state: RootState) => state.notes),
     // true (по возрастанию) | false (по убыванию)
     [order, setOrder] = useState(false),
     notesData = order ? notes : notes.toReversed(),
@@ -46,7 +49,9 @@ function History() {
     const _activeFilter = Array.from(activeFilter).every((v) =>
       note.activities.includes(v),
     );
-    const searchFilter = note.desc.toLowerCase().includes(searchLocal);
+    const searchFilter = note.desc
+      .toLowerCase()
+      .includes(searchLocal.toLowerCase());
 
     switch (true) {
       case !!(activeFilter.size && moodFilter.size):
@@ -95,7 +100,8 @@ function History() {
   //   return "Пожалуйста подождите, идет загрузка...";
   // }
 
-  console.log(filterData);
+  // console.log(filterData);
+  console.log(import.meta.env.VITE_FIREBASE_API_KEY); // "123"
 
   return (
     <>

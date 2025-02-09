@@ -25,7 +25,14 @@ type Props = {
   width?: number;
 };
 
-function Input({ placeholder, type, value, onChange, clear, width }: Props) {
+function Input({
+  placeholder,
+  type,
+  value,
+  onChange,
+  clear = true,
+  width,
+}: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (

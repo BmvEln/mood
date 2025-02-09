@@ -1,6 +1,6 @@
 import "./style.less";
 import { Link } from "react-router-dom";
-import { LINK_LOGIN, LINK_NOTES } from "../../static.ts";
+import { LINK_SING_IN, LINK_SING_UP, LINK_NOTES } from "../../static.ts";
 
 const STEPS = [
   {
@@ -59,11 +59,11 @@ function Home() {
 
       <div className="Home__text">
         <span className="text_underline cursor_pointer">
-          <Link to={LINK_LOGIN}>Войдите</Link>
+          <Link to={LINK_SING_IN}>Войдите</Link>
         </span>{" "}
         в свою учетную запись, чтобы начать, или{" "}
         <span className="text_underline cursor_pointer">
-          <Link to={LINK_LOGIN}>создайте</Link>
+          <Link to={LINK_SING_UP}>создайте</Link>
         </span>{" "}
         новую учетную запись.
       </div>

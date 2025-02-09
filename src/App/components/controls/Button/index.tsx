@@ -11,7 +11,7 @@ const IMGS = {
 };
 
 type Props = {
-  onClick?: () => void;
+  onClick?: (e) => void;
   children?: React.ReactNode;
   width?: number | "fit-content";
   theme?: string;
@@ -19,6 +19,7 @@ type Props = {
   img?: keyof typeof IMGS;
   style?: object;
   className?: string;
+  type?: string;
 };
 
 function Button({

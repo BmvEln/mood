@@ -3,8 +3,11 @@ import Create from "./Create.tsx";
 import Stats from "./Stats.tsx";
 import History from "./History.tsx";
 import { FC } from "react";
-import { useSelector } from "react-redux";
-import { RootState, useAppDispatch } from "../../redux/store.tsx";
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from "../../redux/store.tsx";
 import { setIdxTab } from "../../redux/slices/tabSlice.tsx";
 
 const TABS: { name: string; component: FC }[] = [
@@ -24,7 +27,7 @@ const TABS: { name: string; component: FC }[] = [
 
 function TabsNotes() {
   const dispatch = useAppDispatch(),
-    { idxTab } = useSelector((state: RootState) => state.tab);
+    { idxTab } = useAppSelector((state: RootState) => state.tab);
 
   return (
     <div id="tabsNotes" className="TabsNotes">

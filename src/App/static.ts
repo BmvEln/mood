@@ -23,7 +23,8 @@ export const IMG = {
   box,
 };
 
-export const LINK_LOGIN = "login";
+export const LINK_SING_IN = "singIn";
+export const LINK_SING_UP = "singUp";
 export const LINK_NOTES = "notes";
 export const LINK_HOME = ".";
 export const NOTES_ORDER_DEC = "decrease";

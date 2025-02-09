@@ -4,14 +4,13 @@ import Page from "../../components/layout/Page";
 import classNames from "classnames";
 import Button from "../../components/controls/Button";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store.tsx";
+import { RootState, useAppSelector } from "../../../redux/store.tsx";
 
 function Notes() {
   const tabsNotes = document.getElementById("tabsNotes"),
     page = document.getElementById("page"),
     [btnScrollTop, setBtnScrollTop] = useState(false),
-    { idxTab } = useSelector((state: RootState) => state.tab),
+    { idxTab } = useAppSelector((state: RootState) => state.tab),
     endPositionTab =
       // Отступ сверху у tabsNotes + высота шапки
       // + отступ (чтобы кнопка не появлялась сразу после достижения конца элемента) - использовать переменные для первых 2
