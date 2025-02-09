@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type NoteItem = {
-  id: number;
+  id: string;
   timestamp: {
     date: string;
     time: string;

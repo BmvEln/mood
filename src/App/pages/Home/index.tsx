@@ -1,6 +1,8 @@
 import "./style.less";
 import { Link } from "react-router-dom";
 import { LINK_SING_IN, LINK_SING_UP, LINK_NOTES } from "../../static.ts";
+import { auth } from "../../../firebase.tsx";
+import { signInAnonymously } from "firebase/auth";
 
 const STEPS = [
   {
@@ -35,6 +37,16 @@ const STEPS = [
 ];
 
 function Home() {
+  const signInAnon = () => {
+    signInAnonymously(auth)
+      .then((v) => {
+        console.log("signInAnonymously", v);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <div className="Home">
       <div className="Home__title">Отслеживание настроения</div>
@@ -72,7 +84,9 @@ function Home() {
 
       <div className="Home__text">
         <span className="text_underline cursor_pointer">
-          <Link to={LINK_NOTES}>Пропустить этот шаг.</Link>
+          <Link to={LINK_NOTES} onClick={() => signInAnon()}>
+            Пропустить этот шаг.
+          </Link>
         </span>{" "}
         Я войду в систему позже, чтобы сохранить свои зарегистрированные
         настроения.

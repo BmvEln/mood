@@ -4,8 +4,10 @@ import { ACTIVITIES, IMG, MOODS } from "../../../static.ts";
 import classNames from "classnames";
 import { NoteItem } from "../../../../redux/slices/notesSlice.tsx";
 import Button from "../../controls/Button";
-import { updateNote } from "../../../tabsNotes/utils.tsx";
 import Window from "../../layout/Window";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../../../firebase.tsx";
+import { useAppSelector } from "../../../../redux/store.tsx";
 
 type NoteCard = {
   notesData: NoteItem[];
@@ -19,7 +21,7 @@ type NoteCard = {
   setTextarea: (textarea: string) => void;
   editMode: boolean;
   setEditMode: (v: boolean) => void;
-  setConfirmWindow: (id: number) => void;
+  setConfirmWindow: (id: string) => void;
 };
 
 function NoteCard({
@@ -36,14 +38,44 @@ function NoteCard({
   setConfirmWindow,
   notesData,
 }: NoteCard) {
-  const [activePopUp, setActivePopUp] = useState(false),
+  const { id } = useAppSelector((state) => state.user),
+    [activePopUp, setActivePopUp] = useState(false),
     [activeWindow, setActiveWindow] = useState(false),
     refMood = useRef<HTMLDivElement | null>(null),
     windowDetails = document.getElementById("window-details"),
     onClickUpdateNote = useCallback(
-      (note: object) => {
-        updateNote(note);
-        setTimeout(() => window.location.reload(), 800);
+      async (userId: string, itemId: string, updatedData: object) => {
+        try {
+          const userRef = doc(db, "users", userId),
+            userDoc = await getDoc(userRef);
+
+          if (userDoc.exists()) {
+            const items = userDoc.data()?.items || [];
+            const itemIdx = items.findIndex(
+              (item: NoteItem) => item.id === itemId,
+            );
+
+            if (itemIdx !== -1) {
+              // Создаем новый массив с обновленным элементом
+              const updatedItems = items.map((item: NoteItem) =>
+                item.id === itemId ? { ...item, ...updatedData } : item,
+              );
+
+              // Обновляем массив items в документе
+              await updateDoc(userRef, {
+                items: updatedItems,
+              });
+              alert("Запись успешно изменена!");
+            } else {
+              alert("Запись с указанным ID не найдена.");
+            }
+          } else {
+            alert("Документ пользователя не существует.");
+          }
+        } catch (err) {
+          console.error("Ошибка при изменении записи:", err);
+          alert("Произошла ошибка при изменении записи.");
+        }
       },
       [notesData],
     ),
@@ -71,8 +103,6 @@ function NoteCard({
         : undefined;
     // Точно ли здесь должен быть idxCurrNote?
   }, [idxCurrNote!]);
-
-  console.log(editMode);
 
   return (
     <>
@@ -180,6 +210,7 @@ function NoteCard({
                   size="big"
                   onClick={() => {
                     setEditMode(true);
+
                     setActivs(new Set([...notesData[idxCurrNote!].activities]));
                   }}
                 />
@@ -271,11 +302,13 @@ function NoteCard({
         onClose={() => setActiveWindow(false)}
         confirm="Вы точно хотите ИЗМЕНИТЬ заметку?"
         onClickYes={() => {
-          onClickUpdateNote({
-            ...notesData[idxCurrNote!],
-            mood: mood,
+          const currNote = notesData[idxCurrNote!];
+
+          onClickUpdateNote(id, currNote.id, {
+            ...currNote,
+            mood: mood || currNote.mood,
             activities: Array.from(activs).sort((a, b) => a - b),
-            desc: textarea,
+            desc: textarea || "",
           });
 
           setActiveWindow(false);

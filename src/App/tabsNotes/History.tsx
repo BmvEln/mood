@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
 import { ACTIVITIES, MOODS } from "../static.ts";
 import { NoteItem, setNotes } from "../../redux/slices/notesSlice.tsx";
 import Button from "../components/controls/Button";
@@ -10,7 +9,6 @@ import {
 } from "../../redux/store.tsx";
 import Window from "../components/layout/Window";
 import NoteCard from "../components/blocks/NoteCard";
-import { deleteNote } from "./utils.tsx";
 import {
   getDayCreateNote,
   getMonthCreateNote,
@@ -18,18 +16,21 @@ import {
 } from "../components/functions.tsx";
 import { useDebounce } from "../components/hooks.tsx";
 import Search from "../components/blocks/Search";
-import { DATA_URL } from "../assets/api.tsx";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase.tsx";
+import { arrayRemove } from "@firebase/firestore";
 
 const MAX_NUM_DISPLAY_ACTIVS = 3;
 
 function History() {
   const dispatch = useAppDispatch(),
+    { id } = useAppSelector((state) => state.user),
     // За данными обращаться к notesData
     { notes } = useAppSelector((state: RootState) => state.notes),
     // true (по возрастанию) | false (по убыванию)
     [order, setOrder] = useState(false),
     notesData = order ? notes : notes.toReversed(),
-    [confirmWindow, setConfirmWindow] = useState<number | undefined>(undefined),
+    [confirmWindow, setConfirmWindow] = useState<string | undefined>(undefined),
     [idxCurrNote, setIdxCurrNote] = useState<number | undefined>(undefined),
     [editMode, setEditMode] = useState<boolean>(false),
     [textarea, setTextarea] = useState<string | undefined>(undefined),
@@ -77,31 +78,61 @@ function History() {
         return all;
       }, {}),
     arrVSortByDate = Object.values(sortNotesByDate),
-    arrKSortByDate = Object.keys(sortNotesByDate);
+    arrKSortByDate = Object.keys(sortNotesByDate),
+    onClickDeleteNote = useCallback(async (userId: string, itemId: string) => {
+      try {
+        // Ссылка на документ пользователя
+        const userRef = doc(db, "users", userId),
+          // Получаем текущий документ пользователя
+          userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+          // Извлекаем массив items из документа
+          const items = userDoc.data()?.items || [];
+          const item = items.find((item: NoteItem) => item.id === itemId);
+
+          if (item) {
+            // Удаляем элемент из массива
+            await updateDoc(userRef, {
+              items: arrayRemove(item),
+            });
+            alert("Запись успешно удалена!");
+          } else {
+            alert("Запись с указанным ID не найдена.");
+          }
+        } else {
+          alert("Документ пользователя не существует.");
+        }
+      } catch (err) {
+        console.error("Ошибка при удалении записи:", err);
+        alert("Произошла ошибка при удалении записи.");
+      }
+    }, []);
 
   // TODO: Сделать загрузку не только при получении данных (Но ещё и при добавлении, удалении, обновлении ?? )
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`${DATA_URL}`)
-      .then((response) => {
-        dispatch(setNotes(response.data));
-        setLoading(false);
-      })
-      .catch((error) => setError(error.message));
-  }, []);
+    // Нужно ли завернуть в callback?
+    const getUserData = async (userId: string) => {
+      const userDoc = await getDoc(doc(db, "users", userId));
+      if (userDoc.exists()) {
+        dispatch(setNotes(userDoc.data().items));
+      } else {
+        console.log("Пользователь не создавал записи");
+        return null;
+      }
 
-  // useEffect(() => {
-  //   // Если что-то выбрал, то значение используется либо по умолчанию, либо от кнопки изменить
-  //   setEditMode(typeof idxCurrNote === "number" && editMode);
-  // }, [idxCurrNote]);
+      setLoading(false);
+    };
+
+    getUserData(id);
+  }, []);
 
   // if (loading) {
   //   return "Пожалуйста подождите, идет загрузка...";
   // }
 
-  // console.log(filterData);
-  console.log(import.meta.env.VITE_FIREBASE_API_KEY); // "123"
+  console.log(1213);
 
   return (
     <>
@@ -148,6 +179,7 @@ function History() {
                     {arrayNotes.map(
                       ({ id, timestamp, mood, activities, desc }: NoteItem) => {
                         const currMood = MOODS.find((m) => m.id === mood);
+                        // console.log("arrayNotes", mood);
                         return (
                           <div
                             key={id}
@@ -266,12 +298,13 @@ function History() {
       </Window>
 
       <Window
-        open={typeof confirmWindow === "number"}
+        open={typeof confirmWindow === "string"}
         onClose={() => setConfirmWindow(undefined)}
         confirm="Вы точно хотите УДАЛИТЬ заметку?"
         onClickYes={() => {
-          if (typeof confirmWindow === "number") {
-            deleteNote(confirmWindow);
+          if (typeof confirmWindow === "string") {
+            onClickDeleteNote(id, confirmWindow);
+
             dispatch(
               setNotes(notes.filter((item) => item.id !== confirmWindow)),
             );

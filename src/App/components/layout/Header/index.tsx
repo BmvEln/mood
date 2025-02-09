@@ -8,19 +8,21 @@ import { setUser } from "../../../../redux/slices/userSlice.tsx";
 import { useAppDispatch, useAppSelector } from "../../../../redux/store.tsx";
 
 function Header() {
-  const dispatch = useAppDispatch();
-  const { email } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch(),
+    { email } = useAppSelector((state) => state.user);
 
   const userSingOut = useCallback(() => {
-    signOut(auth).then(() =>
+    signOut(auth).then(() => {
       dispatch(
         setUser({
           id: null,
           email: null,
           token: null,
         }),
-      ),
-    );
+      );
+
+      window.location.reload();
+    });
   }, []);
 
   return (

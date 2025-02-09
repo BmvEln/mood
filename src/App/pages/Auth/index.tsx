@@ -8,6 +8,7 @@ import { FormEvent, useCallback, useState } from "react";
 import Input from "../../components/controls/Input";
 import Button from "../../components/controls/Button";
 import { auth } from "../../../firebase.tsx";
+import { EmailAuthProvider, linkWithCredential } from "firebase/auth";
 
 /**
  *
@@ -50,10 +51,33 @@ function Auth({ method }: { method: string }) {
       });
   }, []);
 
+  const singInAnon = useCallback((e, email: string, pass: string) => {
+    e.preventDefault();
+
+    linkWithCredential(
+      auth?.currentUser,
+      EmailAuthProvider.credential(email, pass),
+    )
+      .then((usercred) => {
+        const user = usercred.user;
+        console.log("Anonymous account successfully upgraded", user);
+        navigate("/notes");
+      })
+      .catch((error) => {
+        console.log("Error upgrading anonymous account", error);
+      });
+  }, []);
+
   return (
     <div className="Auth">
       <form
-        onSubmit={(e) => (isSingUp ? singUp(e, email, pass) : undefined)}
+        onSubmit={(e) =>
+          auth?.currentUser?.isAnonymous
+            ? singInAnon(e, email, pass)
+            : isSingUp
+              ? singUp(e, email, pass)
+              : undefined
+        }
         className="Form"
       >
         <Input

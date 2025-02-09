@@ -2,14 +2,19 @@ import { useCallback, useState } from "react";
 import classNames from "classnames";
 import Button from "../components/controls/Button";
 import { ACTIVITIES, IMG, MOODS, MONTHS, DAYSWEEK } from "../static.ts";
-import { createNote } from "./utils.tsx";
 import Window from "../components/layout/Window";
+import { db } from "../../firebase.tsx";
+import { doc, setDoc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
+import { useAppSelector } from "../../redux/store.tsx";
+import { v4 as uuidv4 } from "uuid";
 
 function Create() {
-  const [textarea, setTextarea] = useState(""),
+  const { id } = useAppSelector((state) => state.user),
+    [textarea, setTextarea] = useState(""),
     [mood, setMood] = useState<number | undefined>(undefined),
     // TODO: Сделать другой способ
     [activities, setActivities] = useState(new Set()),
+    [confirmWindow, setConfirmWindow] = useState(false),
     date: Date = new Date(),
     year: number = date.getFullYear(),
     dateMonth: number = date.getDate(),
@@ -23,17 +28,25 @@ function Create() {
       full: DAYSWEEK.full[dayWeek],
       short: DAYSWEEK.short[dayWeek],
     },
-    onClickCreateNote = useCallback((note: object) => {
-      createNote(note);
+    onClickCreateNote = useCallback(async (userId: string, newItem: object) => {
+      const userRef = doc(db, "users", userId),
+        userDoc = await getDoc(userRef),
+        _newItem = { ...newItem, id: uuidv4() };
 
-      // Сбрасываем значения после создания записи
-      setMood(undefined);
-      setActivities(new Set());
-      setTextarea("");
+      if (userDoc.exists()) {
+        // Если документ существует, обновляем массив
+        await updateDoc(userRef, {
+          items: arrayUnion(_newItem),
+        });
+      } else {
+        // Если документ не существует, создаем его с массивом
+        await setDoc(userRef, {
+          items: [_newItem],
+        });
+      }
 
-      window.scroll(0, 0);
-    }, []),
-    [confirmWindow, setConfirmWindow] = useState(false);
+      alert("Запись успешно добавлена!");
+    }, []);
 
   return (
     <div className="Create flex flex_column">
@@ -113,7 +126,7 @@ function Create() {
             return setConfirmWindow(true);
           }
 
-          onClickCreateNote({
+          onClickCreateNote(id, {
             timestamp: {
               date: dateDB,
               time: timeDB,
