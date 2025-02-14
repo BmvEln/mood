@@ -1,7 +1,7 @@
 import "./style.less";
-import Create from "./Create.tsx";
-import Stats from "./Stats.tsx";
-import History from "./History.tsx";
+import Create from "./Create/Create.tsx";
+import Stats from "./Stats/Stats.tsx";
+import History from "./History/History.tsx";
 import { FC } from "react";
 import {
   RootState,

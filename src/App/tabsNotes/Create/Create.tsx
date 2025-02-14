@@ -1,19 +1,18 @@
 import { useCallback, useState } from "react";
 import classNames from "classnames";
-import Button from "../components/controls/Button";
-import { ACTIVITIES, IMG, MOODS, MONTHS, DAYSWEEK } from "../static.ts";
-import Window from "../components/layout/Window";
-import { db } from "../../firebase.tsx";
+import Button from "../../components/controls/Button";
+import { ACTIVITIES, IMG, MOODS, MONTHS, DAYSWEEK } from "../../static.ts";
+import Window from "../../components/layout/Window";
+import { db } from "../../../firebase.tsx";
 import { doc, setDoc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
-import { useAppSelector } from "../../redux/store.tsx";
+import { useAppSelector } from "../../../redux/store.tsx";
 import { v4 as uuidv4 } from "uuid";
 
 function Create() {
   const { id } = useAppSelector((state) => state.user),
     [textarea, setTextarea] = useState(""),
     [mood, setMood] = useState<number | undefined>(undefined),
-    // TODO: Сделать другой способ
-    [activities, setActivities] = useState(new Set()),
+    [activities, setActivities] = useState<Set<number>>(new Set()),
     [confirmWindow, setConfirmWindow] = useState(false),
     date: Date = new Date(),
     year: number = date.getFullYear(),
@@ -126,16 +125,20 @@ function Create() {
             return setConfirmWindow(true);
           }
 
-          onClickCreateNote(id, {
-            timestamp: {
-              date: dateDB,
-              time: timeDB,
-              dayWeek: dayWeekDB,
-            },
-            mood: mood,
-            activities: Array.from(activities).sort((a, b) => a - b),
-            desc: textarea,
-          });
+          if (typeof id === "string") {
+            onClickCreateNote(id, {
+              timestamp: {
+                date: dateDB,
+                time: timeDB,
+                dayWeek: dayWeekDB,
+              },
+              mood: mood,
+              activities: Array.from(activities as Set<number>).sort(
+                (a, b) => a - b,
+              ),
+              desc: textarea,
+            });
+          }
         }}
         width={200}
       >

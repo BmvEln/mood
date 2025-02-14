@@ -4,6 +4,8 @@ import { IMG } from "../../../static.ts";
 import classNames from "classnames";
 
 const IMGS = {
+  default: undefined,
+  blue: undefined,
   "close-1-black": "closeCardBlack",
   "close-2-blue": "closeCardBlue",
   delete: "deleteCard",
@@ -11,15 +13,15 @@ const IMGS = {
 };
 
 type Props = {
-  onClick?: (e) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children?: React.ReactNode;
   width?: number | "fit-content";
-  theme?: string;
+  // гарантируем, что значение переменной theme будет ключом объекта IMGS
+  theme?: keyof typeof IMGS;
   size?: "md" | "big";
   img?: keyof typeof IMGS;
   style?: object;
   className?: string;
-  type?: string;
 };
 
 function Button({

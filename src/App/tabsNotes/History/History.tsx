@@ -1,23 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
-import { ACTIVITIES, MOODS } from "../static.ts";
-import { NoteItem, setNotes } from "../../redux/slices/notesSlice.tsx";
-import Button from "../components/controls/Button";
+import { ACTIVITIES, MOODS } from "../../static.ts";
+import { NoteItem, setNotes } from "../../../redux/slices/notesSlice.tsx";
+import Button from "../../components/controls/Button";
 import {
   RootState,
   useAppDispatch,
   useAppSelector,
-} from "../../redux/store.tsx";
-import Window from "../components/layout/Window";
-import NoteCard from "../components/blocks/NoteCard";
+} from "../../../redux/store.tsx";
+import Window from "../../components/layout/Window";
+import NoteCard from "../../components/blocks/NoteCard";
 import {
   getDayCreateNote,
   getMonthCreateNote,
   getYearCreateNote,
-} from "../components/functions.tsx";
-import { useDebounce } from "../components/hooks.tsx";
-import Search from "../components/blocks/Search";
+} from "../../components/functions.tsx";
+import { useDebounce } from "../../components/hooks.tsx";
+import Search from "../../components/blocks/Search";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase.tsx";
+import { db } from "../../../firebase.tsx";
 import { arrayRemove } from "@firebase/firestore";
 
 const MAX_NUM_DISPLAY_ACTIVS = 3;

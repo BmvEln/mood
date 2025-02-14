@@ -9,7 +9,7 @@ import { LINK_SING_IN, LINK_NOTES, LINK_SING_UP } from "./static.ts";
 import "../firebase.tsx";
 import Auth from "./pages/Auth";
 import { useEffect } from "react";
-import { RootState, useAppDispatch, useAppSelector } from "../redux/store.tsx";
+import { useAppDispatch } from "../redux/store.tsx";
 import { auth } from "../firebase.tsx";
 import { setUser } from "../redux/slices/userSlice.tsx";
 
@@ -35,7 +35,7 @@ function App() {
           }),
         );
       }
-      console.log();
+
       return () => listener();
     });
   }, [auth?.currentUser]);

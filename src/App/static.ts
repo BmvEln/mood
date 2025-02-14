@@ -10,7 +10,7 @@ import closeCardBlue from "../static/svg/closeCardBlue.svg";
 import closeCardBlack from "../static/svg/closeCardBlack.svg";
 import box from "../static/svg/box.svg";
 
-export const IMG = {
+export const IMG: { [key: string]: string } = {
   s02,
   s04,
   s06,

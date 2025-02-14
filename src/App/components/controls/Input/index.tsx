@@ -1,7 +1,10 @@
 import React, { useRef } from "react";
 import "./style.less";
 
-const iconClear = (onChange: Function, inputRef) => (
+const iconClear = (
+  onChange: Function,
+  inputRef: React.MutableRefObject<HTMLInputElement | null>,
+) => (
   <svg
     onClick={() => {
       onChange("");

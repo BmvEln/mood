@@ -1,4 +1,4 @@
-import BarChart from "../components/graphics/BarChart";
+import BarChart from "../../components/graphics/BarChart";
 
 const SD = {
   // barChart: [1, 0.3, 0.7, 0.4, 0.2, 0.8],

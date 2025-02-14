@@ -1,9 +1,9 @@
 import { MONTHS } from "../static.ts";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  *
  * @param {string} date - например: "01.01.2025"
+ * @param format
  */
 export function getMonthCreateNote(date: string, format = "short") {
   return MONTHS[`${format}`][Number(date.slice(3, 5).replace("0", "")) - 1];

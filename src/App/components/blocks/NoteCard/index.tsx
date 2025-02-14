@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import "./style.less";
 import { ACTIVITIES, IMG, MOODS } from "../../../static.ts";
 import classNames from "classnames";
@@ -11,10 +11,10 @@ import { useAppSelector } from "../../../../redux/store.tsx";
 
 type NoteCard = {
   notesData: NoteItem[];
-  idxCurrNote: number | undefined;
+  idxCurrNote: number;
   setIdxCurrNote: (idx: number | undefined) => void;
-  activs: number[];
-  setActivs: (activs: number[]) => void;
+  activs: Set<number>;
+  setActivs: (activs: number[] | Set<number>) => void;
   mood: number | undefined;
   setMood: (mood: number) => void;
   textarea: string | undefined;
@@ -80,7 +80,7 @@ function NoteCard({
       [notesData],
     ),
     // Берем значение справа если mood не определен
-    moodId = mood || notesData[idxCurrNote!].mood,
+    moodId = mood || notesData[idxCurrNote].mood,
     currMood = MOODS.find((mood) => mood.id === moodId);
 
   useLayoutEffect(() => {
@@ -101,8 +101,7 @@ function NoteCard({
       windowDetails
         ? windowDetails.removeEventListener("click", mouseClickHandler)
         : undefined;
-    // Точно ли здесь должен быть idxCurrNote?
-  }, [idxCurrNote!]);
+  }, [idxCurrNote]);
 
   return (
     <>
@@ -113,7 +112,6 @@ function NoteCard({
               if (idxCurrNote > 0) {
                 setIdxCurrNote(idxCurrNote - 1);
 
-                // // TODO: Возможно можно как-то упростить. Чуть ниже такая же запись, но с другим знаком
                 setActivs([...notesData[idxCurrNote - 1]?.activities]);
                 setMood(notesData[idxCurrNote - 1].mood);
               }
@@ -125,8 +123,8 @@ function NoteCard({
           />
           <div>
             <div>
-              {notesData[idxCurrNote!].timestamp.date}_
-              {notesData[idxCurrNote!].timestamp.time}
+              {notesData[idxCurrNote].timestamp.date}_
+              {notesData[idxCurrNote].timestamp.time}
             </div>
             <div className="separator md" />
             <div>
@@ -162,7 +160,9 @@ function NoteCard({
               <div>
                 <div>{currMood?.name}</div>
 
-                <img src={IMG[currMood?.img]} width={22} height={22} alt="" />
+                {currMood?.img ? (
+                  <img src={IMG[currMood.img]} width={22} height={22} alt="" />
+                ) : null}
               </div>
 
               <svg
@@ -192,7 +192,7 @@ function NoteCard({
                       selected: i + 1 === mood,
                     })}
                     onClick={() => setMood(id)}
-                    style={{ "--bC-popUp-item": color }}
+                    style={{ "--bC-popUp-item": color } as React.CSSProperties}
                   >
                     <div>{name}</div>
                     <img src={IMG[img]} alt="" />
@@ -211,13 +211,13 @@ function NoteCard({
                   onClick={() => {
                     setEditMode(true);
 
-                    setActivs(new Set([...notesData[idxCurrNote!].activities]));
+                    setActivs(new Set([...notesData[idxCurrNote].activities]));
                   }}
                 />
                 <Button
                   theme="delete"
                   size="big"
-                  onClick={() => setConfirmWindow(notesData[idxCurrNote!].id)}
+                  onClick={() => setConfirmWindow(notesData[idxCurrNote].id)}
                 />
               </>
             ) : (
@@ -237,7 +237,7 @@ function NoteCard({
           </div>
         </div>
 
-        {notesData[idxCurrNote!].desc || editMode ? (
+        {notesData[idxCurrNote].desc || editMode ? (
           <textarea
             className="textarea"
             name="noteCardDesc"
@@ -246,7 +246,7 @@ function NoteCard({
             value={
               typeof textarea === "string" || textarea === ""
                 ? textarea
-                : notesData[idxCurrNote!].desc
+                : notesData[idxCurrNote].desc
             }
           />
         ) : (
@@ -258,7 +258,7 @@ function NoteCard({
 
         <div className="NoteCard__activities">
           {ACTIVITIES.map(({ id, name }) => {
-            if (!editMode && notesData[idxCurrNote!].activities?.includes(id)) {
+            if (!editMode && notesData[idxCurrNote].activities?.includes(id)) {
               return (
                 <div
                   key={id}
@@ -302,17 +302,18 @@ function NoteCard({
         onClose={() => setActiveWindow(false)}
         confirm="Вы точно хотите ИЗМЕНИТЬ заметку?"
         onClickYes={() => {
-          const currNote = notesData[idxCurrNote!];
+          const currNote = notesData[idxCurrNote];
 
-          onClickUpdateNote(id, currNote.id, {
-            ...currNote,
-            mood: mood || currNote.mood,
-            activities: Array.from(activs).sort((a, b) => a - b),
-            desc: textarea || "",
-          });
+          if (typeof id === "string") {
+            onClickUpdateNote(id, currNote.id, {
+              ...currNote,
+              mood: mood || currNote.mood,
+              activities: Array.from(activs).sort((a, b) => a - b),
+              desc: textarea || "",
+            });
 
-          setActiveWindow(false);
-          // setIdxCurrNote(undefined);
+            setActiveWindow(false);
+          }
         }}
       />
     </>

@@ -8,10 +8,10 @@ type SearchProps = {
   searchLocal: string;
   setSearchLocal: (v: string) => void;
   setSearchServer: (v: string) => void;
-  moodFilter: number;
-  setMoodFilter: (v: number | undefined) => void;
-  activeFilter: number;
-  setActiveFilter: (v: number | undefined) => void;
+  moodFilter: Set<number>;
+  setMoodFilter: (v: Set<number>) => void;
+  activeFilter: Set<number>;
+  setActiveFilter: (v: Set<number>) => void;
   order: boolean;
   setOrder: (v: boolean) => void;
 };
@@ -91,7 +91,7 @@ function Search({
             }))}
           />
           <div style={{ display: "flex", columnGap: "12px" }}></div>
-          {ACTIVITIES.map(({ id, name }, i) =>
+          {ACTIVITIES.map(({ id, name }) =>
             Array.from(activeFilter).includes(id) ? (
               <div key={id}>{name}</div>
             ) : null,
