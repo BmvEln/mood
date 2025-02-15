@@ -39,44 +39,43 @@ function History() {
     [error, setError] = useState(""),
     [loading, setLoading] = useState(false);
 
-  const [moodFilter, setMoodFilter] = useState(new Set()),
-    [activeFilter, setActiveFilter] = useState(new Set()),
+  const [moodFilter, setMoodFilter] = useState<Set<number>>(new Set()),
+    [activeFilter, setActiveFilter] = useState<Set<number>>(new Set()),
     [searchLocal, setSearchLocal] = useState<string>(""),
     [searchServer, setSearchServer] = useDebounce("", 600);
 
-  const filterData = notesData.filter((note) => {
-    const _moodFilter = Array.from(moodFilter).includes(note.mood);
-    // Если [].every = true функция callback не выполняется, т.к. все значения будут тру
-    const _activeFilter = Array.from(activeFilter).every((v) =>
-      note.activities.includes(v),
-    );
-    const searchFilter = note.desc
-      .toLowerCase()
-      .includes(searchLocal.toLowerCase());
+  const filterData = notesData.filter((note: NoteItem) => {
+    // Проверка наличия фильтров
+    const hasActiveFilter = activeFilter.size > 0,
+      hasMoodFilter = moodFilter.size > 0,
+      // Проверка соответствия заметки фильтрам
+      matchesMood = Array.from(moodFilter).includes(note.mood),
+      // Если [].every = true функция callback не выполняется, т.к. все значения будут true
+      matchesActivities = Array.from(activeFilter).every((v) =>
+        note.activities.includes(v),
+      ),
+      matchesSearch = note.desc
+        .toLowerCase()
+        .includes(searchLocal.toLowerCase());
 
-    switch (true) {
-      case !!(activeFilter.size && moodFilter.size):
-        if (_activeFilter && _moodFilter && searchFilter) return true;
-        break;
-      case !!moodFilter.size:
-        if (_moodFilter && searchFilter) return true;
-        break;
-      // По умолчанию
-      case _activeFilter && searchFilter:
-        return true;
+    if (hasActiveFilter && hasMoodFilter) {
+      return matchesActivities && matchesMood && matchesSearch;
+    } else if (hasMoodFilter) {
+      return matchesMood && matchesSearch;
+    } else {
+      return matchesActivities && matchesSearch;
     }
   });
 
-  const sortNotesByDate = //
-      filterData.reduce((all: object, note: NoteItem) => {
-        // Проверяем есть ли в объекте массив под нужным ключом
-        // если нет, кладём пустой массив
-        all[note.timestamp.date] = all[note.timestamp.date] || [];
-        // кладём элемент в массив
-        all[note.timestamp.date].push(note);
+  const sortNotesByDate = filterData.reduce((all: object, note: NoteItem) => {
+      // Проверяем есть ли в объекте массив под нужным ключом
+      // если нет, кладём пустой массив
+      all[note.timestamp.date] = all[note.timestamp.date] || [];
+      // кладём элемент в массив
+      all[note.timestamp.date].push(note);
 
-        return all;
-      }, {}),
+      return all;
+    }, {}),
     arrVSortByDate = Object.values(sortNotesByDate),
     arrKSortByDate = Object.keys(sortNotesByDate),
     onClickDeleteNote = useCallback(async (userId: string, itemId: string) => {
