@@ -31,8 +31,8 @@ function Auth({ method }: { method: string }) {
           navigate("/");
         })
         .catch((err) => {
-          alert(err);
-          setError(err);
+          alert(err.message);
+          setError(err.message);
         });
     },
     [],
@@ -46,8 +46,8 @@ function Auth({ method }: { method: string }) {
         navigate("/notes");
       })
       .catch((err) => {
-        alert(err);
-        setError(err);
+        alert(err.message);
+        setError(err.message);
       });
   }, []);
 
@@ -96,9 +96,7 @@ function Auth({ method }: { method: string }) {
         {error ? <div>{error}</div> : null}
 
         <Button
-          onClick={(e: Event) =>
-            isSingUp ? undefined : singIn(e, email, pass)
-          }
+          onClick={(e) => (isSingUp ? undefined : singIn(e, email, pass))}
         >
           {isSingUp ? "Зарегистрироваться" : "Войти"}
         </Button>

@@ -14,11 +14,12 @@ import {
   getMonthCreateNote,
   getYearCreateNote,
 } from "../../components/functions.tsx";
-import { useDebounce } from "../../components/hooks.tsx";
+import { useDebounce, useUserActivities } from "../../components/hooks.tsx";
 import Search from "../../components/blocks/Search";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase.tsx";
 import { arrayRemove } from "@firebase/firestore";
+import SkeletonCard from "../../components/other/SkeletonCard/SkeletonCard.tsx";
 
 const MAX_NUM_DISPLAY_ACTIVS = 3;
 
@@ -27,6 +28,7 @@ function History() {
     { id } = useAppSelector((state) => state.user),
     // За данными обращаться к notesData
     { notes } = useAppSelector((state: RootState) => state.notes),
+    { activitiesList, activitiesLoading } = useUserActivities(),
     // true (по возрастанию) | false (по убыванию)
     [order, setOrder] = useState(false),
     notesData = order ? notes : notes.toReversed(),
@@ -34,7 +36,7 @@ function History() {
     [idxCurrNote, setIdxCurrNote] = useState<number | undefined>(undefined),
     [editMode, setEditMode] = useState<boolean>(false),
     [textarea, setTextarea] = useState<string | undefined>(undefined),
-    [activs, setActivs] = useState(new Set()),
+    [activs, setActivs] = useState<Set<number>>(new Set()),
     [mood, setMood] = useState<number | undefined>(undefined),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(false);
@@ -67,15 +69,17 @@ function History() {
     }
   });
 
-  const sortNotesByDate = filterData.reduce((all: object, note: NoteItem) => {
-      // Проверяем есть ли в объекте массив под нужным ключом
-      // если нет, кладём пустой массив
-      all[note.timestamp.date] = all[note.timestamp.date] || [];
-      // кладём элемент в массив
-      all[note.timestamp.date].push(note);
+  const sortNotesByDate = filterData.reduce(
+      (all: { [key: string]: NoteItem[] }, note: NoteItem) => {
+        // Проверяем есть ли в объекте массив под нужным ключом
+        // если нет, кладём пустой массив
+        all[note.timestamp.date] = all[note.timestamp.date] || [];
+        all[note.timestamp.date].push(note);
 
-      return all;
-    }, {}),
+        return all;
+      },
+      {},
+    ),
     arrVSortByDate = Object.values(sortNotesByDate),
     arrKSortByDate = Object.keys(sortNotesByDate),
     onClickDeleteNote = useCallback(async (userId: string, itemId: string) => {
@@ -175,94 +179,108 @@ function History() {
                     <div>{getYearCreateNote(arrKSortByDate[i])}</div>
                   </div>
                   <div className="Tracker-cards">
-                    {arrayNotes.map(
-                      ({ id, timestamp, mood, activities, desc }: NoteItem) => {
-                        const currMood = MOODS.find((m) => m.id === mood);
-                        // console.log("arrayNotes", mood);
-                        return (
-                          <div
-                            key={id}
-                            // TODO Tracker или Note определись
-                            className="Tracker-card"
-                            style={{ backgroundColor: currMood?.color }}
-                            onClick={(e) => {
-                              const btnClose = e.target.closest(
-                                ".Button.close-1-black",
-                              );
+                    {activitiesLoading
+                      ? Array(4)
+                          .fill(1)
+                          .map(() => <SkeletonCard />)
+                      : arrayNotes.map(
+                          ({
+                            id,
+                            timestamp,
+                            mood,
+                            activities,
+                            desc,
+                          }: NoteItem) => {
+                            const currMood = MOODS.find((m) => m.id === mood);
+                            // console.log("arrayNotes", mood);
+                            return (
+                              <div
+                                key={id}
+                                // TODO Tracker или Note определись
+                                className="Tracker-card"
+                                style={{ backgroundColor: currMood?.color }}
+                                onClick={(e) => {
+                                  const btnClose = e.target.closest(
+                                    ".Button.close-1-black",
+                                  );
 
-                              if (!btnClose) {
-                                setIdxCurrNote(
-                                  notesData.findIndex(
-                                    (item: NoteItem) => item.id === id,
-                                  ),
-                                );
-                              }
-                            }}
-                          >
-                            <div className="Tracker-card__header">
-                              <div>
-                                <div>{currMood?.name}</div>
-                                <div className="separator md" />
-                                <div>{timestamp.time}</div>
-                              </div>
-                              <div className="Tracker-card__btns">
-                                <Button
-                                  theme="black"
-                                  onClick={() => {
-                                    // Сохраняем данные из сервера в state, чтобы в дальнейшем его можно было изменять
-                                    setActivs(new Set([...activities]));
-                                    setMood(mood);
-                                    // Сбрасываем значение, если пользователь ранее что-то написал, но решил не обновлять данные
-                                    setTextarea(undefined);
-
+                                  if (!btnClose) {
                                     setIdxCurrNote(
                                       notesData.findIndex(
                                         (item: NoteItem) => item.id === id,
                                       ),
                                     );
+                                  }
+                                }}
+                              >
+                                <div className="Tracker-card__header">
+                                  <div>
+                                    <div>{currMood?.name}</div>
+                                    <div className="separator md" />
+                                    <div>{timestamp.time}</div>
+                                  </div>
+                                  <div className="Tracker-card__btns">
+                                    <Button
+                                      theme="black"
+                                      onClick={() => {
+                                        // Сохраняем данные из сервера в state, чтобы в дальнейшем его можно было изменять
+                                        setActivs(new Set([...activities]));
+                                        setMood(mood);
+                                        // Сбрасываем значение, если пользователь ранее что-то написал, но решил не обновлять данные
+                                        setTextarea(undefined);
 
-                                    setEditMode(true);
-                                  }}
-                                >
-                                  Изменить
-                                </Button>
-                                <Button
-                                  theme="close-1-black"
-                                  onClick={() => setConfirmWindow(id)}
-                                />
+                                        setIdxCurrNote(
+                                          notesData.findIndex(
+                                            (item: NoteItem) => item.id === id,
+                                          ),
+                                        );
+
+                                        setEditMode(true);
+                                      }}
+                                    >
+                                      Изменить
+                                    </Button>
+                                    <Button
+                                      theme="close-1-black"
+                                      onClick={() => setConfirmWindow(id)}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="Tracker-card__spacer" />
+                                <div className="Tracker-card__desc">
+                                  {desc || "Никаких мыслей..."}
+                                </div>
+                                <div className="Tracker-card__activities">
+                                  {activities.map(
+                                    (activity: number, k: number) => {
+                                      const active = activitiesList.find(
+                                        (m: { id: number; name: string }) =>
+                                          m.id === activity,
+                                      );
+
+                                      return k < MAX_NUM_DISPLAY_ACTIVS ? (
+                                        <Button
+                                          key={k}
+                                          className="noHover"
+                                          theme="white"
+                                        >
+                                          {active?.name}
+                                        </Button>
+                                      ) : null;
+                                    },
+                                  )}
+
+                                  {activities.length >
+                                  MAX_NUM_DISPLAY_ACTIVS ? (
+                                    <Button theme="black-border">
+                                      Показать все
+                                    </Button>
+                                  ) : null}
+                                </div>
                               </div>
-                            </div>
-                            <div className="Tracker-card__spacer" />
-                            <div className="Tracker-card__desc">
-                              {desc || "Никаких мыслей..."}
-                            </div>
-                            <div className="Tracker-card__activities">
-                              {activities.map((activity: number, k: number) => {
-                                const active = ACTIVITIES.find(
-                                  (m) => m.id === activity,
-                                );
-
-                                return k < MAX_NUM_DISPLAY_ACTIVS ? (
-                                  <Button
-                                    key={k}
-                                    className="noHover"
-                                    theme="white"
-                                  >
-                                    {active?.name}
-                                  </Button>
-                                ) : null;
-                              })}
-
-                              {activities.length > MAX_NUM_DISPLAY_ACTIVS ? (
-                                <Button theme="black-border">
-                                  Показать все
-                                </Button>
-                              ) : null}
-                            </div>
-                          </div>
-                        );
-                      },
-                    )}
+                            );
+                          },
+                        )}
                   </div>
                 </div>
               ))}

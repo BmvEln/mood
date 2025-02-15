@@ -1,12 +1,11 @@
 .Input {
   position: relative;
-  width: 240px;
-  height: 40px;
 
   > input {
     padding: 8px 30px 8px 10px;
     border-radius: 8px;
-    width: inherit;
+    width: 240px;
+    height: 40px;
     border: none;
     box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.25);
     -webkit-appearance: none;
@@ -14,7 +13,6 @@
       box-shadow 0.3s,
       border 0.3s;
     box-sizing: border-box;
-    height: inherit;
 
     &:hover {
       box-shadow: inset 0 0 4px 0 rgba(0, 0, 0, 0.25);
@@ -42,6 +40,56 @@
     &:hover {
       opacity: 1;
       transform: scale(1);
+    }
+  }
+
+  &.isCreate {
+    > input {
+      cursor: default;
+      height: 32px;
+      padding-right: 36px;
+      border-radius: 16px;
+      border: 1px solid #00157c;
+
+      &:focus,
+      &:active {
+        cursor: text;
+
+        &::placeholder {
+          color: transparent;
+        }
+      }
+
+      &::placeholder {
+        color: #00157c;
+      }
+
+      &:hover {
+        box-shadow: unset;
+      }
+    }
+
+    > .Input__icon {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+
+      cursor: pointer;
+      user-select: none;
+
+      position: absolute;
+      right: 0;
+
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      border-left: 1px solid #00157c;
+
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #00000033;
+      }
     }
   }
 }

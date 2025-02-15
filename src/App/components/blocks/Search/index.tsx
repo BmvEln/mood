@@ -1,8 +1,9 @@
 import "./style.less";
 import Input from "../../controls/Input";
 import Select from "../../controls/Select";
-import { ACTIVITIES, MOODS } from "../../../static.ts";
+import { MOODS } from "../../../static.ts";
 import Button from "../../controls/Button";
+import { useUserActivities } from "../../hooks.tsx";
 
 type SearchProps = {
   searchLocal: string;
@@ -27,6 +28,8 @@ function Search({
   order,
   setOrder,
 }: SearchProps) {
+  const { activitiesList } = useUserActivities();
+
   return (
     <div className="Search">
       <Input
@@ -85,13 +88,15 @@ function Search({
 
               setActiveFilter(new Set(activeFilter.add(v)));
             }}
-            variants={ACTIVITIES.map((active) => ({
-              id: active.id,
-              name: active.name,
-            }))}
+            variants={activitiesList.map(
+              (active: { id: number; name: string }) => ({
+                id: active.id,
+                name: active.name,
+              }),
+            )}
           />
           <div style={{ display: "flex", columnGap: "12px" }}></div>
-          {ACTIVITIES.map(({ id, name }) =>
+          {activitiesList.map(({ id, name }) =>
             Array.from(activeFilter).includes(id) ? (
               <div key={id}>{name}</div>
             ) : null,

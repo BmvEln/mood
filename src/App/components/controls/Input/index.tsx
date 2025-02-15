@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./style.less";
+import classNames from "classnames";
 
 const iconClear = (
   onChange: Function,
@@ -26,6 +27,9 @@ type Props = {
   type?: string;
   clear?: boolean;
   width?: number;
+  style?: object;
+  className?: "isCreate";
+  onSubmit?: () => void;
 };
 
 function Input({
@@ -35,13 +39,55 @@ function Input({
   onChange,
   clear = true,
   width,
+  style,
+  className,
+  onSubmit,
 }: Props) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null),
+    [isFocused, setIsFocused] = useState(false),
+    isCreate = className === "isCreate";
+
+  const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+
+    if (isFocused) {
+      setIsFocused(false);
+      inputRef.current?.blur();
+      onChange("");
+    } else if (!isFocused) {
+      setIsFocused(true);
+      inputRef.current?.focus();
+    }
+
+    if (onSubmit && isFocused) onSubmit();
+  };
+
+  useEffect(() => {
+    const mouseClickHandler = (e: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !e.composedPath().includes(inputRef.current as EventTarget) &&
+        isCreate
+      ) {
+        setIsFocused(false);
+        inputRef.current?.blur();
+        onChange("");
+      }
+    };
+
+    document.addEventListener("click", mouseClickHandler);
+
+    return () => document.removeEventListener("click", mouseClickHandler);
+  }, []);
 
   return (
-    <div className="Input" style={{ width }}>
+    <div className={classNames("Input", className)}>
       <input
-        style={{ width }}
+        style={{
+          width,
+          pointerEvents: isCreate && !isFocused ? "none" : "auto",
+          ...style,
+        }}
         ref={inputRef}
         placeholder={placeholder}
         type={type}
@@ -49,8 +95,17 @@ function Input({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           onChange(e.target.value)
         }
+        onFocus={() => (isCreate ? {} : setIsFocused(true))}
+        onBlur={() => (isCreate ? {} : setIsFocused(false))}
         disabled={false}
       />
+
+      {isCreate ? (
+        <span className="Input__icon" onClick={handleClick}>
+          {isFocused ? "✓" : "+"}
+        </span>
+      ) : null}
+
       {clear && value !== "" ? iconClear(onChange, inputRef) : null}
     </div>
   );

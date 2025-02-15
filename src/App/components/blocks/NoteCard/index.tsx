@@ -8,6 +8,7 @@ import Window from "../../layout/Window";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../firebase.tsx";
 import { useAppSelector } from "../../../../redux/store.tsx";
+import { useUserActivities } from "../../hooks.tsx";
 
 type NoteCard = {
   notesData: NoteItem[];
@@ -42,6 +43,11 @@ function NoteCard({
     [activePopUp, setActivePopUp] = useState(false),
     [activeWindow, setActiveWindow] = useState(false),
     refMood = useRef<HTMLDivElement | null>(null),
+    // Берем значение справа если mood не определен
+    moodId = mood || notesData[idxCurrNote].mood,
+    currMood = MOODS.find((mood) => mood.id === moodId),
+    { activitiesList, activitiesLoading, activitiesError } =
+      useUserActivities(),
     windowDetails = document.getElementById("window-details"),
     onClickUpdateNote = useCallback(
       async (userId: string, itemId: string, updatedData: object) => {
@@ -78,10 +84,7 @@ function NoteCard({
         }
       },
       [notesData],
-    ),
-    // Берем значение справа если mood не определен
-    moodId = mood || notesData[idxCurrNote].mood,
-    currMood = MOODS.find((mood) => mood.id === moodId);
+    );
 
   useLayoutEffect(() => {
     const mouseClickHandler = (e: MouseEvent) => {
@@ -256,10 +259,12 @@ function NoteCard({
           </div>
         )}
 
+        {/*NoteCard__activities*/}
         <div className="NoteCard__activities">
-          {ACTIVITIES.map(({ id, name }) => {
+          {activitiesList.map(({ id, name }) => {
             if (!editMode && notesData[idxCurrNote].activities?.includes(id)) {
               return (
+                // TODO: Создать тему ддя кнопки activity и в двух местах использовать
                 <div
                   key={id}
                   className={classNames("NoteCard__activity", {
@@ -273,6 +278,7 @@ function NoteCard({
 
             if (editMode) {
               return (
+                // TODO: Создать тему ддя кнопки activity и в двух местах использовать
                 <div
                   key={id}
                   className={classNames("NoteCard__activity", {

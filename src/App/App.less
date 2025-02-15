@@ -337,8 +337,27 @@ line {
   border-radius: 16px;
   padding: 8px 12px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
   background-color: #8f94f7e6;
+
+  &.activity {
+    box-shadow: inset 0 0 0 1px #3557ff;
+    color: #3557ff;
+    background-color: #fff;
+
+    &:hover {
+      color: #00157c;
+      background-color: #d2d9ff;
+    }
+
+    &.selected {
+      box-shadow: unset;
+      color: #00157c;
+      background-color: #d2d9ff;
+    }
+  }
 
   &:hover {
     background-color: #8f94f7;

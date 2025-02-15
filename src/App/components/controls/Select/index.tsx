@@ -6,7 +6,7 @@ type SelectProps = {
   onChange?: (value: number | undefined) => void;
 };
 
-function Select({ variants = [{ id: 1, name: "" }], onChange }: SelectProps) {
+function Select({ variants = [{ id: "1", name: "" }], onChange }: SelectProps) {
   const [activePopUp, setActivePopUp] = useState(false);
   const [idxItem, setIdxItem] = useState<number | undefined>(undefined);
   const refSelect = useRef(null);
@@ -40,7 +40,7 @@ function Select({ variants = [{ id: 1, name: "" }], onChange }: SelectProps) {
         className="Select__popUp"
         style={{
           opacity: activePopUp ? 1 : 0,
-          maxHeight: activePopUp ? 350 : 0,
+          maxHeight: activePopUp ? "250px" : 0,
           pointerEvents: activePopUp ? "auto" : "none",
         }}
       >
