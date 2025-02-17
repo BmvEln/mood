@@ -6,7 +6,7 @@ type SelectProps = {
   onChange?: (value: number | undefined) => void;
 };
 
-function Select({ variants = [{ id: "1", name: "" }], onChange }: SelectProps) {
+function Select({ variants = [{ id: 1, name: "" }], onChange }: SelectProps) {
   const [activePopUp, setActivePopUp] = useState(false);
   const [idxItem, setIdxItem] = useState<number | undefined>(undefined);
   const refSelect = useRef(null);

@@ -23,10 +23,11 @@ export const IMG: { [key: string]: string } = {
   box,
 };
 
-export const LINK_SING_IN = "singIn";
-export const LINK_SING_UP = "singUp";
-export const LINK_NOTES = "notes";
+export const LINK_SING_IN = "/singIn";
+export const LINK_SING_UP = "/singUp";
+export const LINK_NOTES = "/notes";
 export const LINK_HOME = ".";
+export const LINK_PROFILE = "/profile";
 export const NOTES_ORDER_DEC = "decrease";
 export const NOTES_ORDER_INC = "increase";
 

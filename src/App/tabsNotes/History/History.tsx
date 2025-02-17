@@ -182,7 +182,7 @@ function History() {
                     {activitiesLoading
                       ? Array(4)
                           .fill(1)
-                          .map(() => <SkeletonCard />)
+                          .map((_, i) => <SkeletonCard key={i} />)
                       : arrayNotes.map(
                           ({
                             id,

@@ -33,7 +33,32 @@
 
     > div:last-child {
       display: flex;
+      align-items: center;
       column-gap: 24px;
     }
+  }
+
+  &__profile-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    color: white;
+    transition: 0.3s;
+    background-color: #8f94f7;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__accession {
+    display: flex;
+    column-gap: 16px;
   }
 }

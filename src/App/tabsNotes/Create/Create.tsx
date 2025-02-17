@@ -35,8 +35,7 @@ function Create() {
     [textarea, setTextarea] = useState(""),
     [mood, setMood] = useState<number | undefined>(undefined),
     [activities, setActivities] = useState<Set<number>>(new Set()),
-    { activitiesList, activitiesLoading, activitiesError } =
-      useUserActivities(),
+    { activitiesList, activitiesLoading } = useUserActivities(),
     [confirmWindow, setConfirmWindow] = useState(false),
     dateInfo = getDateInfo(),
     dateDB = `${dateInfo.dateMonth.toString().padStart(2, "0")}.${(dateInfo.month + 1).toString().padStart(2, "0")}.${dateInfo.year}`,
@@ -87,6 +86,8 @@ function Create() {
       },
       [],
     );
+
+  console.log(activitiesList);
 
   return (
     <div className="Create flex flex_column">

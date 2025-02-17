@@ -49,6 +49,8 @@ export const useUserActivities = () => {
 
         const userId = auth?.currentUser?.uid;
 
+        console.log(userId);
+
         if (userId) {
           const activities = await fetchUserActivities(userId);
           setActivitiesList(activities);

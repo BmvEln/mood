@@ -1,0 +1,52 @@
+.Profile {
+  position: relative;
+
+  &__panel {
+    background: #647996;
+    width: 50%;
+    min-height: 575px;
+    padding: 30px 40px;
+    margin: 32px auto 60px auto;
+  }
+
+  &__title {
+    font-size: 28px;
+    margin-bottom: 50px;
+  }
+
+  &__subtitle {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+
+  &__login-info {
+    display: flex;
+    margin-bottom: 16px;
+    column-gap: 64px;
+
+    > div {
+      > div:first-child {
+        margin-bottom: 16px;
+      }
+
+      > div:last-child {
+        display: flex;
+        align-items: center;
+        column-gap: 16px;
+      }
+    }
+  }
+
+  &__creationTime {
+    display: flex;
+    column-gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  &__separator {
+    border: 1px solid #d2d9ff;
+    border-radius: 1em;
+    background-color: #d2d9ff;
+    margin-bottom: 16px;
+  }
+}

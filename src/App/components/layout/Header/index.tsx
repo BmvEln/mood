@@ -1,29 +1,17 @@
 import "./style.less";
 import { Link } from "react-router-dom";
-import { LINK_HOME, LINK_SING_IN, LINK_NOTES } from "../../../static.ts";
-import { useCallback } from "react";
-import { auth } from "../../../../firebase.tsx";
-import { signOut } from "firebase/auth";
-import { setUser } from "../../../../redux/slices/userSlice.tsx";
-import { useAppDispatch, useAppSelector } from "../../../../redux/store.tsx";
+import {
+  LINK_HOME,
+  LINK_SING_IN,
+  LINK_NOTES,
+  LINK_SING_UP,
+  LINK_PROFILE,
+} from "../../../static.ts";
+import Button from "../../controls/Button";
+import { useAppSelector } from "../../../../redux/store.tsx";
 
 function Header() {
-  const dispatch = useAppDispatch(),
-    { email } = useAppSelector((state) => state.user);
-
-  const userSingOut = useCallback(() => {
-    signOut(auth).then(() => {
-      dispatch(
-        setUser({
-          id: null,
-          email: null,
-          token: null,
-        }),
-      );
-
-      window.location.reload();
-    });
-  }, []);
+  const { email } = useAppSelector((state) => state.user);
 
   return (
     <div className="Header">
@@ -32,18 +20,22 @@ function Header() {
         <div>
           <div className="Header__signedIn">
             {email ? (
-              <span>
-                {email}{" "}
-                <span className="cursor_pointer" onClick={() => userSingOut()}>
-                  (Выйти)
-                </span>
-              </span>
+              <Link to={LINK_PROFILE}>
+                <div className="Header__profile-img">{email.slice(0, 1)}</div>
+              </Link>
             ) : (
-              "Вы не вошли"
+              <div className="Header__accession">
+                <Link to={LINK_SING_IN}>
+                  <Button>Войти</Button>
+                </Link>
+
+                <Link to={LINK_SING_UP}>
+                  <Button>Регистрация</Button>
+                </Link>
+              </div>
             )}
           </div>
           <Link to={LINK_NOTES}>Записи</Link>
-          <Link to={LINK_SING_IN}>Вход</Link>
         </div>
       </div>
     </div>
