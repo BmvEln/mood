@@ -20,15 +20,14 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase.tsx";
 import { arrayRemove } from "@firebase/firestore";
 import SkeletonCard from "../../components/other/SkeletonCard/SkeletonCard.tsx";
-
-const MAX_NUM_DISPLAY_ACTIVS = 3;
+import Dashboard from "../../components/blocks/NoteGroup";
+import NoteGroup from "../../components/blocks/NoteGroup";
 
 function History() {
   const dispatch = useAppDispatch(),
     { id } = useAppSelector((state) => state.user),
     // За данными обращаться к notesData
     { notes } = useAppSelector((state: RootState) => state.notes),
-    { activitiesList, activitiesLoading } = useUserActivities(),
     // true (по возрастанию) | false (по убыванию)
     [order, setOrder] = useState(false),
     notesData = order ? notes : notes.toReversed(),
@@ -47,29 +46,28 @@ function History() {
     [searchServer, setSearchServer] = useDebounce("", 600);
 
   const filterData = notesData.filter((note: NoteItem) => {
-    // Проверка наличия фильтров
-    const hasActiveFilter = activeFilter.size > 0,
-      hasMoodFilter = moodFilter.size > 0,
-      // Проверка соответствия заметки фильтрам
-      matchesMood = Array.from(moodFilter).includes(note.mood),
-      // Если [].every = true функция callback не выполняется, т.к. все значения будут true
-      matchesActivities = Array.from(activeFilter).every((v) =>
-        note.activities.includes(v),
-      ),
-      matchesSearch = note.desc
-        .toLowerCase()
-        .includes(searchLocal.toLowerCase());
+      // Проверка наличия фильтров
+      const hasActiveFilter = activeFilter.size > 0,
+        hasMoodFilter = moodFilter.size > 0,
+        // Проверка соответствия заметки фильтрам
+        matchesMood = Array.from(moodFilter).includes(note.mood),
+        // Если [].every = true функция callback не выполняется, т.к. все значения будут true
+        matchesActivities = Array.from(activeFilter).every((v) =>
+          note.activities.includes(v),
+        ),
+        matchesSearch = note.desc
+          .toLowerCase()
+          .includes(searchLocal.toLowerCase());
 
-    if (hasActiveFilter && hasMoodFilter) {
-      return matchesActivities && matchesMood && matchesSearch;
-    } else if (hasMoodFilter) {
-      return matchesMood && matchesSearch;
-    } else {
-      return matchesActivities && matchesSearch;
-    }
-  });
-
-  const sortNotesByDate = filterData.reduce(
+      if (hasActiveFilter && hasMoodFilter) {
+        return matchesActivities && matchesMood && matchesSearch;
+      } else if (hasMoodFilter) {
+        return matchesMood && matchesSearch;
+      } else {
+        return matchesActivities && matchesSearch;
+      }
+    }),
+    sortNotesByDate = filterData.reduce(
       (all: { [key: string]: NoteItem[] }, note: NoteItem) => {
         // Проверяем есть ли в объекте массив под нужным ключом
         // если нет, кладём пустой массив
@@ -81,7 +79,6 @@ function History() {
       {},
     ),
     arrVSortByDate = Object.values(sortNotesByDate),
-    arrKSortByDate = Object.keys(sortNotesByDate),
     onClickDeleteNote = useCallback(async (userId: string, itemId: string) => {
       try {
         // Ссылка на документ пользователя
@@ -136,6 +133,7 @@ function History() {
   // }
 
   console.log(1213);
+  console.log(sortNotesByDate);
 
   return (
     <>
@@ -163,126 +161,18 @@ function History() {
           ? "На текущий момент записей нет"
           : !arrVSortByDate.length
             ? "Записи не найдены"
-            : arrVSortByDate.map((arrayNotes, i) => (
-                <div key={arrKSortByDate[i]} className="Tracker-group">
-                  <div className="Tracker-date">
-                    <div>
-                      {
-                        sortNotesByDate[arrKSortByDate[i]][0].timestamp.dayWeek
-                          .short
-                      }
-                      .,
-                    </div>
-                    <div>{getMonthCreateNote(arrKSortByDate[i])}</div>
-                    <div>{getDayCreateNote(arrKSortByDate[i])}</div>
-                    <div className="separator md" />
-                    <div>{getYearCreateNote(arrKSortByDate[i])}</div>
-                  </div>
-                  <div className="Tracker-cards">
-                    {activitiesLoading
-                      ? Array(4)
-                          .fill(1)
-                          .map((_, i) => <SkeletonCard key={i} />)
-                      : arrayNotes.map(
-                          ({
-                            id,
-                            timestamp,
-                            mood,
-                            activities,
-                            desc,
-                          }: NoteItem) => {
-                            const currMood = MOODS.find((m) => m.id === mood);
-                            // console.log("arrayNotes", mood);
-                            return (
-                              <div
-                                key={id}
-                                // TODO Tracker или Note определись
-                                className="Tracker-card"
-                                style={{ backgroundColor: currMood?.color }}
-                                onClick={(e) => {
-                                  const btnClose = e.target.closest(
-                                    ".Button.close-1-black",
-                                  );
-
-                                  if (!btnClose) {
-                                    setIdxCurrNote(
-                                      notesData.findIndex(
-                                        (item: NoteItem) => item.id === id,
-                                      ),
-                                    );
-                                  }
-                                }}
-                              >
-                                <div className="Tracker-card__header">
-                                  <div>
-                                    <div>{currMood?.name}</div>
-                                    <div className="separator md" />
-                                    <div>{timestamp.time}</div>
-                                  </div>
-                                  <div className="Tracker-card__btns">
-                                    <Button
-                                      theme="black"
-                                      onClick={() => {
-                                        // Сохраняем данные из сервера в state, чтобы в дальнейшем его можно было изменять
-                                        setActivs(new Set([...activities]));
-                                        setMood(mood);
-                                        // Сбрасываем значение, если пользователь ранее что-то написал, но решил не обновлять данные
-                                        setTextarea(undefined);
-
-                                        setIdxCurrNote(
-                                          notesData.findIndex(
-                                            (item: NoteItem) => item.id === id,
-                                          ),
-                                        );
-
-                                        setEditMode(true);
-                                      }}
-                                    >
-                                      Изменить
-                                    </Button>
-                                    <Button
-                                      theme="close-1-black"
-                                      onClick={() => setConfirmWindow(id)}
-                                    />
-                                  </div>
-                                </div>
-                                <div className="Tracker-card__spacer" />
-                                <div className="Tracker-card__desc">
-                                  {desc || "Никаких мыслей..."}
-                                </div>
-                                <div className="Tracker-card__activities">
-                                  {activities.map(
-                                    (activity: number, k: number) => {
-                                      const active = activitiesList.find(
-                                        (m: { id: number; name: string }) =>
-                                          m.id === activity,
-                                      );
-
-                                      return k < MAX_NUM_DISPLAY_ACTIVS ? (
-                                        <Button
-                                          key={k}
-                                          className="noHover"
-                                          theme="white"
-                                        >
-                                          {active?.name}
-                                        </Button>
-                                      ) : null;
-                                    },
-                                  )}
-
-                                  {activities.length >
-                                  MAX_NUM_DISPLAY_ACTIVS ? (
-                                    <Button theme="black-border">
-                                      Показать все
-                                    </Button>
-                                  ) : null}
-                                </div>
-                              </div>
-                            );
-                          },
-                        )}
-                  </div>
-                </div>
+            : arrVSortByDate.map((_, idx) => (
+                <NoteGroup
+                  idx={idx}
+                  data={notesData}
+                  setIdxCurrNote={setIdxCurrNote}
+                  setActivs={setActivs}
+                  setMood={setMood}
+                  setTextarea={setTextarea}
+                  setEditMode={setEditMode}
+                  setConfirmWindow={setConfirmWindow}
+                  sortNotesByDate={sortNotesByDate}
+                />
               ))}
       </div>
 

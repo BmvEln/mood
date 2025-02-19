@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import "./style.less";
 import Button from "../../components/controls/Button";
 import { setUser } from "../../../redux/slices/userSlice.tsx";
